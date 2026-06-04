@@ -1,0 +1,47 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: bl-crm-db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=SuperStrong@Passw0rd!
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlvolume:/var/opt/mssql
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bl-crm-backend
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      # Overrides the connection string in appsettings.json to point to the 'db' container
+      - ConnectionStrings__DefaultConnection=Server=db,1433;Database=BL_CRM;User Id=sa;Password=SuperStrong@Passw0rd!;MultipleActiveResultSets=true;TrustServerCertificate=True
+    ports:
+      - "5000:8080" # Maps local port 5000 to container port 8080
+    depends_on:
+      - db
+
+  # -------------------------------------------------------------------------
+  # OPTIONAL: Frontend container. 
+  # Uncomment this if you want to run the frontend in Docker instead of via cmd.
+  # -------------------------------------------------------------------------
+  # frontend:
+  #   image: node:20-alpine
+  #   container_name: bl-crm-frontend
+  #   working_dir: /app
+  #   volumes:
+  #     - ./frontend:/app
+  #   ports:
+  #     - "4200:4200"
+  #   command: >
+  #     sh -c "npm install && npx ng serve --host 0.0.0.0 --poll 2000"
+  #   depends_on:
+  #     - backend
+
+volumes:
+  sqlvolume:
