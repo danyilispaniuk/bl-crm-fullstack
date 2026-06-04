@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/BL.CRM.API/BL.CRM.API.csproj" />
+    <Project Path="src/BL.CRM.Application/BL.CRM.Application.csproj" />
+    <Project Path="src/BL.CRM.Domain/BL.CRM.Domain.csproj" />
+    <Project Path="src/BL.CRM.Infrastructure/BL.CRM.Infrastructure.csproj" />
+  </Folder>
+</Solution>

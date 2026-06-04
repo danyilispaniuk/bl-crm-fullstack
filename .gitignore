@@ -1,0 +1,17 @@
+# Backend (.NET)
+[Bb]in/
+[Oo]bj/
+.vs/
+appsettings.Development.json
+
+# Frontend (Node / Angular)
+node_modules/
+dist/
+.angular/
+
+# Environment files
+.env
+
+# OS
+.DS_Store
+Thumbs.db
