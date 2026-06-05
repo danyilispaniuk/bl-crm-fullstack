@@ -1,13 +1,15 @@
 using BL.CRM.Application.Users.DTOs;
 using BL.CRM.Application.Users.Interfaces;
+using BL.CRM.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BL.CRM.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController(IUserService userService) : ControllerBase
+public class UsersController(IUserService userService, UserManager<Person> userManager) : ControllerBase
 {
     [HttpGet("~/api/admin/[controller]/clients")]
     [Authorize(Roles = "Admin")]
@@ -24,6 +26,53 @@ public class UsersController(IUserService userService) : ControllerBase
         var client = await userService.GetClientByIdAsync(id);
         if (client == null) return NotFound();
         return Ok(client);
+    }
+
+    [HttpPost("~/api/[controller]/clients")]
+    [Authorize(Roles = "Admin,Advisor")]
+    public async Task<IActionResult> CreateClient([FromBody] CreateClientDto request)
+    {
+        // Check if PersonalId is provided and already exists in the system
+        if (!string.IsNullOrWhiteSpace(request.PersonalId))
+        {
+            var isPersonalIdTaken = userManager.Users.Any(u => u.PersonalId == request.PersonalId);
+            if (isPersonalIdTaken)
+            {
+                return BadRequest(new { Message = "This Personal ID is already registered to another user." });
+            }
+        }
+
+        var client = new Client
+        {
+            UserName = request.Email,
+            Email = request.Email,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            PersonalId = request.PersonalId,
+            Age = request.Age
+        };
+
+        var result = await userManager.CreateAsync(client);
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(error.Code, error.Description);
+            }
+            return BadRequest(ModelState);
+        }
+
+        // Return a 201 Created with the new client ID
+        return CreatedAtAction(nameof(GetClientById), new { id = client.Id }, new UserDto 
+        {
+            Id = client.Id,
+            Email = client.Email,
+            FirstName = client.FirstName,
+            LastName = client.LastName,
+            PersonalId = client.PersonalId,
+            Age = client.Age,
+            Role = "Client"
+        });
     }
 
     [HttpGet("~/api/admin/[controller]/advisors")]

@@ -58,4 +58,34 @@ public class ContractService(IApplicationDbContext dbContext) : IContractService
                 }).ToList()
             }).FirstOrDefaultAsync();
     }
+
+    public async Task<ContractDto> CreateContractAsync(CreateContractDto request)
+    {
+        var participants = await dbContext.Advisors
+            .Where(a => request.ParticipantIds.Contains(a.Id))
+            .ToListAsync();
+
+        var contract = new BL.CRM.Domain.Entities.Contract
+        {
+            RegistrationNumber = request.RegistrationNumber,
+            Institution = request.Institution,
+            StartDate = request.StartDate,
+            ValidityDate = request.ValidityDate,
+            EndDate = request.EndDate,
+            ClientId = request.ClientId,
+            ContractManagerId = request.ContractManagerId,
+            Participants = participants
+        };
+
+        dbContext.Contracts.Add(contract);
+        await dbContext.SaveChangesAsync();
+
+        return await GetContractByIdAsync(contract.Id) 
+            ?? throw new InvalidOperationException("Failed to retrieve created contract.");
+    }
+
+    public async Task<bool> IsRegistrationNumberUniqueAsync(string registrationNumber)
+    {
+        return !await dbContext.Contracts.AnyAsync(c => c.RegistrationNumber == registrationNumber);
+    }
 }

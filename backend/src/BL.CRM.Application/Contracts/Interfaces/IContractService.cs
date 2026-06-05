@@ -6,4 +6,6 @@ public interface IContractService
 {
     Task<IEnumerable<ContractsDto>> GetAllContractsAsync();
     Task<ContractDto?> GetContractByIdAsync(Guid id);
+    Task<ContractDto> CreateContractAsync(CreateContractDto request);
+    Task<bool> IsRegistrationNumberUniqueAsync(string registrationNumber);
 }

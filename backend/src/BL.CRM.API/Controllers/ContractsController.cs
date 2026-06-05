@@ -25,4 +25,26 @@ public class ContractsController(IContractService contractService) : ControllerB
         if (contract == null) return NotFound();
         return Ok(contract);
     }
+
+    [HttpPost("~/api/[controller]")]
+    [Authorize(Roles = "Admin,Advisor")]
+    public async Task<IActionResult> CreateContract([FromBody] CreateContractDto request)
+    {
+        try
+        {
+            var isUnique = await contractService.IsRegistrationNumberUniqueAsync(request.RegistrationNumber);
+            if (!isUnique)
+            {
+                return BadRequest(new { Message = "A contract with this Registration Number already exists." });
+            }
+
+            var createdContract = await contractService.CreateContractAsync(request);
+            return CreatedAtAction(nameof(GetById), new { id = createdContract.Id }, createdContract);
+        }
+        catch (Exception ex)
+        {
+            // E.g., foreign key violation if ClientId or ContractManagerId is invalid
+            return BadRequest(new { Message = "Failed to create contract. Ensure Client and Manager exist.", Error = ex.Message });
+        }
+    }
 }
