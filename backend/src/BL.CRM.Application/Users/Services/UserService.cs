@@ -65,4 +65,36 @@ public class UserService(IApplicationDbContext dbContext) : IUserService
                 Role = "Advisor"
             }).ToListAsync();
     }
+
+    public async Task<UserDto?> GetClientByIdAsync(Guid id)
+    {
+        return await dbContext.Clients
+            .Where(c => c.Id == id)
+            .Select(c => new UserDto
+            {
+                Id = c.Id,
+                Email = c.Email ?? string.Empty,
+                FirstName = c.FirstName,
+                LastName = c.LastName,
+                PersonalId = c.PersonalId,
+                Age = c.Age,
+                Role = "Client"
+            }).FirstOrDefaultAsync();
+    }
+
+    public async Task<UserDto?> GetAdvisorByIdAsync(Guid id)
+    {
+        return await dbContext.Advisors
+            .Where(a => a.Id == id)
+            .Select(a => new UserDto
+            {
+                Id = a.Id,
+                Email = a.Email ?? string.Empty,
+                FirstName = a.FirstName,
+                LastName = a.LastName,
+                PersonalId = a.PersonalId,
+                Age = a.Age,
+                Role = "Advisor"
+            }).FirstOrDefaultAsync();
+    }
 }

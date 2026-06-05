@@ -4,5 +4,6 @@ namespace BL.CRM.Application.Contracts.Interfaces;
 
 public interface IContractService
 {
-    Task<IEnumerable<ContractDto>> GetAllContractsAsync();
+    Task<IEnumerable<ContractsDto>> GetAllContractsAsync();
+    Task<ContractDto?> GetContractByIdAsync(Guid id);
 }

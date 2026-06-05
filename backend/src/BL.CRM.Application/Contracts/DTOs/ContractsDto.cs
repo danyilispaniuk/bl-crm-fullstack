@@ -1,8 +1,6 @@
-using BL.CRM.Application.Users.DTOs;
-
 namespace BL.CRM.Application.Contracts.DTOs;
 
-public class ContractDto
+public class ContractsDto
 {
     public Guid Id { get; set; }
     public string RegistrationNumber { get; set; } = string.Empty;
@@ -16,6 +14,4 @@ public class ContractDto
 
     public Guid ContractManagerId { get; set; }
     public string ContractManagerName { get; set; } = string.Empty;
-
-    public IEnumerable<UserDto> Participants { get; set; } = [];
 }

@@ -16,4 +16,13 @@ public class ContractsController(IContractService contractService) : ControllerB
         var contracts = await contractService.GetAllContractsAsync();
         return Ok(contracts);
     }
+
+    [HttpGet("~/api/[controller]/{id}")]
+    [Authorize(Roles = "Admin,Advisor")]
+    public async Task<ActionResult<ContractDto>> GetById(Guid id)
+    {
+        var contract = await contractService.GetContractByIdAsync(id);
+        if (contract == null) return NotFound();
+        return Ok(contract);
+    }
 }
