@@ -11,7 +11,7 @@ public abstract class Person : IdentityUser<Guid>
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string? PersonalId { get; set; } // Czech Rodné číslo
-    public int Age { get; set; }
+    public DateOnly BirthDate { get; set; }
 
     // Audit fields (since we no longer inherit Entity directly)
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

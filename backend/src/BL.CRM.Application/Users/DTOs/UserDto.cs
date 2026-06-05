@@ -7,6 +7,6 @@ public class UserDto
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string? PersonalId { get; set; }
-    public int Age { get; set; }
+    public DateOnly BirthDate { get; set; }
     public string Role { get; set; } = string.Empty;
 }

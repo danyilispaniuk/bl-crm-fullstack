@@ -26,8 +26,8 @@ public class ContractSeeder(ApplicationDbContext dbContext, UserManager<Person> 
                     {
                         RegistrationNumber = regNumber,
                         Institution = institutions[i % institutions.Length],
-                        StartDate = DateTime.UtcNow.AddDays(-i * 10),
-                        ValidityDate = DateTime.UtcNow.AddYears(1).AddDays(i * 10),
+                        StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-i * 10)),
+                        ValidityDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(1).AddDays(i * 10)),
                         ClientId = client.Id,
                         ContractManagerId = manager.Id
                     };

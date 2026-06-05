@@ -17,7 +17,7 @@ public class UserService(IApplicationDbContext dbContext) : IUserService
                 FirstName = c.FirstName,
                 LastName = c.LastName,
                 PersonalId = c.PersonalId,
-                Age = c.Age,
+                BirthDate = c.BirthDate,
                 Role = "Client"
             }).ToListAsync();
 
@@ -29,7 +29,7 @@ public class UserService(IApplicationDbContext dbContext) : IUserService
                 FirstName = a.FirstName,
                 LastName = a.LastName,
                 PersonalId = a.PersonalId,
-                Age = a.Age,
+                BirthDate = a.BirthDate,
                 Role = "Advisor"
             }).ToListAsync();
 
@@ -46,7 +46,7 @@ public class UserService(IApplicationDbContext dbContext) : IUserService
                 FirstName = c.FirstName,
                 LastName = c.LastName,
                 PersonalId = c.PersonalId,
-                Age = c.Age,
+                BirthDate = c.BirthDate,
                 Role = "Client"
             }).ToListAsync();
     }
@@ -61,7 +61,7 @@ public class UserService(IApplicationDbContext dbContext) : IUserService
                 FirstName = a.FirstName,
                 LastName = a.LastName,
                 PersonalId = a.PersonalId,
-                Age = a.Age,
+                BirthDate = a.BirthDate,
                 Role = "Advisor"
             }).ToListAsync();
     }
@@ -77,7 +77,7 @@ public class UserService(IApplicationDbContext dbContext) : IUserService
                 FirstName = c.FirstName,
                 LastName = c.LastName,
                 PersonalId = c.PersonalId,
-                Age = c.Age,
+                BirthDate = c.BirthDate,
                 Role = "Client"
             }).FirstOrDefaultAsync();
     }
@@ -93,7 +93,7 @@ public class UserService(IApplicationDbContext dbContext) : IUserService
                 FirstName = a.FirstName,
                 LastName = a.LastName,
                 PersonalId = a.PersonalId,
-                Age = a.Age,
+                BirthDate = a.BirthDate,
                 Role = "Advisor"
             }).FirstOrDefaultAsync();
     }

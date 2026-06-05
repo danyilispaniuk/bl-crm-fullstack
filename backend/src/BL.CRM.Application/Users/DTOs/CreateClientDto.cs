@@ -19,6 +19,6 @@ public class CreateClientDto
     [RegularExpression(@"^\d{5,6}\/\d{4}$", ErrorMessage = "Personal ID must be in the format XXXXXX/XXXX or XXXXX/XXXX.")]
     public string? PersonalId { get; set; }
 
-    [Range(0, 120, ErrorMessage = "Age must be between 0 and 120.")]
-    public int Age { get; set; }
+    [Required(ErrorMessage = "Birth date is required.")]
+    public DateOnly BirthDate { get; set; }
 }

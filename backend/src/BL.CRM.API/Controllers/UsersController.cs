@@ -49,7 +49,7 @@ public class UsersController(IUserService userService, UserManager<Person> userM
             FirstName = request.FirstName,
             LastName = request.LastName,
             PersonalId = request.PersonalId,
-            Age = request.Age
+            BirthDate = request.BirthDate
         };
 
         var result = await userManager.CreateAsync(client);
@@ -70,7 +70,7 @@ public class UsersController(IUserService userService, UserManager<Person> userM
             FirstName = client.FirstName,
             LastName = client.LastName,
             PersonalId = client.PersonalId,
-            Age = client.Age,
+            BirthDate = client.BirthDate,
             Role = "Client"
         });
     }

@@ -10,9 +10,9 @@ public class Contract : Entity
     public string RegistrationNumber { get; set; } = string.Empty; // Registration number
     public string Institution { get; set; } = string.Empty; // Institution (ČSOB, AEGON, etc.)
     
-    public DateTime StartDate { get; set; } // Start date
-    public DateTime ValidityDate { get; set; } // Validity date
-    public DateTime? EndDate { get; set; } // End date
+    public DateOnly StartDate { get; set; } // Start date
+    public DateOnly ValidityDate { get; set; } // Validity date
+    public DateOnly? EndDate { get; set; } // End date
 
     // Relationships
 

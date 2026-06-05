@@ -12,12 +12,12 @@ public class CreateContractDto
     public string Institution { get; set; } = string.Empty;
 
     [Required]
-    public DateTime StartDate { get; set; }
+    public DateOnly StartDate { get; set; }
 
     [Required]
-    public DateTime ValidityDate { get; set; }
+    public DateOnly ValidityDate { get; set; }
 
-    public DateTime? EndDate { get; set; }
+    public DateOnly? EndDate { get; set; }
 
     [Required]
     public Guid ClientId { get; set; }

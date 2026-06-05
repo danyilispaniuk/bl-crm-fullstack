@@ -53,7 +53,7 @@ public class ContractService(IApplicationDbContext dbContext) : IContractService
                     FirstName = p.FirstName,
                     LastName = p.LastName,
                     PersonalId = p.PersonalId,
-                    Age = p.Age,
+                    BirthDate = p.BirthDate,
                     Role = "Advisor"
                 }).ToList()
             }).FirstOrDefaultAsync();
