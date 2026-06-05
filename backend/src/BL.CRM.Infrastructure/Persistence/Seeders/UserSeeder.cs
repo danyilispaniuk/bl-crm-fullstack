@@ -16,7 +16,7 @@ public class UserSeeder(UserManager<Person> userManager)
                 Email = "admin@test.com",
                 FirstName = "Admin",
                 LastName = "System",
-                Age = 40,
+                BirthDate = new DateOnly(1980, 1, 1),
                 PersonalId = "800101/0000"
             };
             var result = await userManager.CreateAsync(admin, "Password123!");
@@ -35,7 +35,7 @@ public class UserSeeder(UserManager<Person> userManager)
                     Email = email,
                     FirstName = $"AdvisorName{i}",
                     LastName = $"AdvisorSurname{i}",
-                    Age = 30 + (i % 20),
+                    BirthDate = new DateOnly(1990, 1, i),
                     PersonalId = $"9001{i:00}/1234"
                 };
                 var result = await userManager.CreateAsync(advisor, "Password123!");
@@ -55,7 +55,7 @@ public class UserSeeder(UserManager<Person> userManager)
                     Email = email,
                     FirstName = $"ClientName{i}",
                     LastName = $"ClientSurname{i}",
-                    Age = 25 + (i % 30),
+                    BirthDate = new DateOnly(1995, 1, i),
                     PersonalId = $"9501{i:00}/5678"
                 };
                 var result = await userManager.CreateAsync(client);
