@@ -32,7 +32,10 @@ public static class DependencyInjection
             .AddRoles<Microsoft.AspNetCore.Identity.IdentityRole<Guid>>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
-        // Database Seeder
+        // Database Seeders
+        services.AddScoped<BL.CRM.Infrastructure.Persistence.Seeders.RoleSeeder>();
+        services.AddScoped<BL.CRM.Infrastructure.Persistence.Seeders.UserSeeder>();
+        services.AddScoped<BL.CRM.Infrastructure.Persistence.Seeders.ContractSeeder>();
         services.AddScoped<DatabaseSeeder>();
 
         return services;
