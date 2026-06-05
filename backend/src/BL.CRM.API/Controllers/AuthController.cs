@@ -68,6 +68,54 @@ public class AuthController(UserManager<Person> userManager) : ControllerBase
             }
         });
     }
+
+    [HttpPost("signup")]
+    public async Task<IActionResult> SignupAdvisor([FromBody] BL.CRM.Application.Users.DTOs.RegisterAdvisorDto request)
+    {
+        // 1. Check if email is already registered
+        var existingUser = await userManager.FindByEmailAsync(request.Email);
+        if (existingUser != null)
+        {
+            return BadRequest(new { Message = "Email is already registered." });
+        }
+
+        // 2. Check if PersonalId is already registered
+        if (!string.IsNullOrWhiteSpace(request.PersonalId))
+        {
+            var isPersonalIdTaken = userManager.Users.Any(u => u.PersonalId == request.PersonalId);
+            if (isPersonalIdTaken)
+            {
+                return BadRequest(new { Message = "This Personal ID is already registered to another user." });
+            }
+        }
+
+        // 3. Create the Advisor
+        var advisor = new Advisor
+        {
+            UserName = request.Email,
+            Email = request.Email,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            PersonalId = request.PersonalId,
+            BirthDate = request.BirthDate
+        };
+
+        // 4. Save to database with password hashing
+        var result = await userManager.CreateAsync(advisor, request.Password);
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(error.Code, error.Description);
+            }
+            return BadRequest(ModelState);
+        }
+
+        // 5. Assign the Advisor role
+        await userManager.AddToRoleAsync(advisor, "Advisor");
+
+        return Ok(new { Message = "Advisor registered successfully." });
+    }
 }
 
 public class LoginDto
