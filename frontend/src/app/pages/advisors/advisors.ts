@@ -20,6 +20,26 @@ export class Advisors implements OnInit {
   searchQuery = signal('');
   isLoading = signal(true);
 
+  loadAdvisors(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.advisorsService.getAdvisors().subscribe({
+        next: (data) => {
+          this.advisors.set(data);
+          this.isLoading.set(false);
+        },
+        error: (err) => {
+          console.error('[Advisors] API error:', err);
+          this.isLoading.set(false);
+          const message =
+            err?.error?.message ||
+            err?.error?.Message ||
+            `Failed to load advisors (HTTP ${err?.status ?? 'unknown'})`;
+          this.toastService.error(message);
+        }
+      });
+    }
+  }
+
   filteredAdvisors = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
     const allAdvisors = this.advisors();
@@ -64,23 +84,6 @@ export class Advisors implements OnInit {
   }
 
   ngOnInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      this.advisorsService.getAdvisors().subscribe({
-        next: (data) => {
-          console.log('[Advisors] API response count:', data.length, data);
-          this.advisors.set(data);
-          this.isLoading.set(false);
-        },
-        error: (err) => {
-          console.error('[Advisors] API error:', err);
-          this.isLoading.set(false);
-          const message =
-            err?.error?.message ||
-            err?.error?.Message ||
-            `Failed to load advisors (HTTP ${err?.status ?? 'unknown'})`;
-          this.toastService.error(message);
-        }
-      });
-    }
+    this.loadAdvisors();
   }
 }

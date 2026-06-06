@@ -11,6 +11,7 @@ export interface Advisor {
   lastName: string;
   personalId?: string;
   birthDate?: string;
+  phoneNumber?: string;
   role: string;
 }
 
