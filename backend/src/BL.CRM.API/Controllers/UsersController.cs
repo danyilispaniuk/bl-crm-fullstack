@@ -32,13 +32,22 @@ public class UsersController(IUserService userService, UserManager<Person> userM
     [Authorize(Roles = "Admin,Advisor")]
     public async Task<IActionResult> CreateClient([FromBody] CreateClientDto request)
     {
-        // Check if PersonalId is provided and already exists in the system
+        // Check if PersonalId exists
         if (!string.IsNullOrWhiteSpace(request.PersonalId))
         {
             var isPersonalIdTaken = userManager.Users.Any(u => u.PersonalId == request.PersonalId);
             if (isPersonalIdTaken)
             {
                 return BadRequest(new { Message = "This Personal ID is already registered to another user." });
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Email))
+        {
+            var isEmailTaken = userManager.Users.Any(u => u.Email == request.Email);
+            if (isEmailTaken)
+            {
+                return BadRequest(new { Message = "This Email is already registered to another user." });
             }
         }
 
@@ -62,7 +71,6 @@ public class UsersController(IUserService userService, UserManager<Person> userM
             return BadRequest(ModelState);
         }
 
-        // Return a 201 Created with the new client ID
         return CreatedAtAction(nameof(GetClientById), new { id = client.Id }, new UserDto 
         {
             Id = client.Id,
@@ -136,7 +144,7 @@ public class UsersController(IUserService userService, UserManager<Person> userM
 
     private async Task<IActionResult> UpdateUserAsync(Person user, UpdateUserDto request)
     {
-        // Check if PersonalId is provided and already exists in the system (excluding the current user)
+        // Check if PersonalId exists
         if (!string.IsNullOrWhiteSpace(request.PersonalId))
         {
             var isPersonalIdTaken = userManager.Users.Any(u => u.PersonalId == request.PersonalId && u.Id != user.Id);
@@ -146,7 +154,7 @@ public class UsersController(IUserService userService, UserManager<Person> userM
             }
         }
 
-        // Handle Email Update (requires changing UserName as well in Identity)
+        // Email update
         if (user.Email != request.Email)
         {
             var existingEmail = await userManager.FindByEmailAsync(request.Email);

@@ -13,25 +13,24 @@ public class AuthController(UserManager<Person> userManager) : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto request, [FromServices] IConfiguration configuration)
     {
-        // 1. Find the user by email
+        // Find the user by email
         var user = await userManager.FindByEmailAsync(request.Email);
         if (user == null)
         {
             return Unauthorized(new { message = "Invalid email or password" });
         }
 
-        // 2. Verify the password
+        // Verify password
         var isPasswordValid = await userManager.CheckPasswordAsync(user, request.Password);
         if (!isPasswordValid)
         {
             return Unauthorized(new { message = "Invalid email or password" });
         }
 
-        // 3. Get the user's role
         var roles = await userManager.GetRolesAsync(user);
         var role = roles.FirstOrDefault() ?? "Client";
 
-        // 4. Generate JWT Token
+        // Generate JWT Token
         var claims = new List<System.Security.Claims.Claim>
         {
             new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -54,7 +53,7 @@ public class AuthController(UserManager<Person> userManager) : ControllerBase
 
         var tokenString = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler().WriteToken(token);
 
-        // 5. Return token and user data
+        // Return token and user data
         return Ok(new
         {
             Token = tokenString,
@@ -72,14 +71,14 @@ public class AuthController(UserManager<Person> userManager) : ControllerBase
     [HttpPost("signup")]
     public async Task<IActionResult> SignupAdvisor([FromBody] BL.CRM.Application.Users.DTOs.RegisterAdvisorDto request)
     {
-        // 1. Check if email is already registered
+        // Check if email is registered
         var existingUser = await userManager.FindByEmailAsync(request.Email);
         if (existingUser != null)
         {
             return BadRequest(new { Message = "Email is already registered." });
         }
 
-        // 2. Check if PersonalId is already registered
+        // Check if PersonalId is registered
         if (!string.IsNullOrWhiteSpace(request.PersonalId))
         {
             var isPersonalIdTaken = userManager.Users.Any(u => u.PersonalId == request.PersonalId);
@@ -89,7 +88,6 @@ public class AuthController(UserManager<Person> userManager) : ControllerBase
             }
         }
 
-        // 3. Create the Advisor
         var advisor = new Advisor
         {
             UserName = request.Email,
@@ -100,7 +98,6 @@ public class AuthController(UserManager<Person> userManager) : ControllerBase
             BirthDate = request.BirthDate
         };
 
-        // 4. Save to database with password hashing
         var result = await userManager.CreateAsync(advisor, request.Password);
         if (!result.Succeeded)
         {
@@ -111,7 +108,6 @@ public class AuthController(UserManager<Person> userManager) : ControllerBase
             return BadRequest(ModelState);
         }
 
-        // 5. Assign the Advisor role
         await userManager.AddToRoleAsync(advisor, "Advisor");
 
         return Ok(new { Message = "Advisor registered successfully." });

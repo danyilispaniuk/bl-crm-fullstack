@@ -13,7 +13,7 @@ public abstract class Person : IdentityUser<Guid>
     public string? PersonalId { get; set; } // Czech Rodné číslo
     public DateOnly BirthDate { get; set; }
 
-    // Audit fields (since we no longer inherit Entity directly)
+    // Audit fields
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
 }

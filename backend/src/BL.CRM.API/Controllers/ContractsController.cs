@@ -43,7 +43,7 @@ public class ContractsController(IContractService contractService) : ControllerB
         }
         catch (Exception ex)
         {
-            // E.g., foreign key violation if ClientId or ContractManagerId is invalid
+            // Foreign key violation if ClientId or ContractManagerId is invalid
             return BadRequest(new { Message = "Failed to create contract. Ensure Client and Manager exist.", Error = ex.Message });
         }
     }
@@ -70,7 +70,7 @@ public class ContractsController(IContractService contractService) : ControllerB
         }
         catch (Exception ex)
         {
-            // E.g., foreign key violation if ClientId or ContractManagerId is invalid
+            // Foreign key violation if ClientId or ContractManagerId is invalid
             return BadRequest(new { Message = "Failed to update contract. Ensure Client and Manager exist.", Error = ex.Message });
         }
     }
