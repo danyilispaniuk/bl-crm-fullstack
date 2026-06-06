@@ -84,8 +84,45 @@ public class ContractService(IApplicationDbContext dbContext) : IContractService
             ?? throw new InvalidOperationException("Failed to retrieve created contract.");
     }
 
-    public async Task<bool> IsRegistrationNumberUniqueAsync(string registrationNumber)
+    public async Task<ContractDto?> UpdateContractAsync(Guid id, UpdateContractDto request)
     {
-        return !await dbContext.Contracts.AnyAsync(c => c.RegistrationNumber == registrationNumber);
+        var contract = await dbContext.Contracts
+            .Include(c => c.Participants)
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+        if (contract == null) return null;
+
+        var participants = await dbContext.Advisors
+            .Where(a => request.ParticipantIds.Contains(a.Id))
+            .ToListAsync();
+
+        contract.RegistrationNumber = request.RegistrationNumber;
+        contract.Institution = request.Institution;
+        contract.StartDate = request.StartDate;
+        contract.ValidityDate = request.ValidityDate;
+        contract.EndDate = request.EndDate;
+        contract.ClientId = request.ClientId;
+        contract.ContractManagerId = request.ContractManagerId;
+        
+        // Update Participants collection
+        contract.Participants.Clear();
+        foreach (var participant in participants)
+        {
+            contract.Participants.Add(participant);
+        }
+
+        await dbContext.SaveChangesAsync();
+
+        return await GetContractByIdAsync(contract.Id);
+    }
+
+    public async Task<bool> IsRegistrationNumberUniqueAsync(string registrationNumber, Guid? excludeContractId = null)
+    {
+        var query = dbContext.Contracts.AsQueryable();
+        if (excludeContractId.HasValue)
+        {
+            query = query.Where(c => c.Id != excludeContractId.Value);
+        }
+        return !await query.AnyAsync(c => c.RegistrationNumber == registrationNumber);
     }
 }

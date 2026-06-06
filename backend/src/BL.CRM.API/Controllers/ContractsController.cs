@@ -47,4 +47,31 @@ public class ContractsController(IContractService contractService) : ControllerB
             return BadRequest(new { Message = "Failed to create contract. Ensure Client and Manager exist.", Error = ex.Message });
         }
     }
+    [HttpPut("~/api/[controller]/{id}")]
+    [Authorize(Roles = "Admin,Advisor")]
+    public async Task<IActionResult> UpdateContract(Guid id, [FromBody] UpdateContractDto request)
+    {
+        try
+        {
+            var isUnique = await contractService.IsRegistrationNumberUniqueAsync(request.RegistrationNumber, id);
+            if (!isUnique)
+            {
+                return BadRequest(new { Message = "A contract with this Registration Number already exists." });
+            }
+
+            var updatedContract = await contractService.UpdateContractAsync(id, request);
+            
+            if (updatedContract == null)
+            {
+                return NotFound(new { Message = "Contract not found." });
+            }
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            // E.g., foreign key violation if ClientId or ContractManagerId is invalid
+            return BadRequest(new { Message = "Failed to update contract. Ensure Client and Manager exist.", Error = ex.Message });
+        }
+    }
 }

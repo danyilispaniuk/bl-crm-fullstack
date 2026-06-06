@@ -7,7 +7,7 @@ public class UserSeeder(UserManager<Person> userManager)
 {
     public async Task SeedAsync()
     {
-        // Seed Admin (Using Advisor class for system access)
+        // Seed Admin (Using Advisor class)
         if (!userManager.Users.Any(u => u.Email == "admin@test.com"))
         {
             var admin = new Advisor
