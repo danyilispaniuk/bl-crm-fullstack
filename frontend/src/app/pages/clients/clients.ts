@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, PLATFORM_ID, signal, computed } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ClientsService, Client } from '../../services/clients.service';
 import { ToastService } from '../../services/toast.service';
 import { PersonaCardComponent } from '../../components/persona-card/persona-card';
@@ -7,7 +8,7 @@ import { NavigationComponent } from '../../components/navigation/navigation';
 
 @Component({
   selector: 'app-clients',
-  imports: [PersonaCardComponent, NavigationComponent],
+  imports: [PersonaCardComponent, NavigationComponent, FormsModule],
   templateUrl: './clients.html',
   styleUrl: './clients.scss'
 })
@@ -19,6 +20,85 @@ export class Clients implements OnInit {
   clients = signal<Client[]>([]);
   searchQuery = signal('');
   isLoading = signal(true);
+
+  // Modal signals
+  isModalOpen = signal(false);
+  email = signal('');
+  firstName = signal('');
+  lastName = signal('');
+  personalId = signal('');
+  birthDate = signal('');
+  phoneNumber = signal('');
+  showValidationErrors = signal(false);
+
+  openModal(): void {
+    this.email.set('');
+    this.firstName.set('');
+    this.lastName.set('');
+    this.personalId.set('');
+    this.birthDate.set('');
+    this.phoneNumber.set('');
+    this.showValidationErrors.set(false);
+    this.isModalOpen.set(true);
+  }
+
+  closeModal(): void {
+    this.isModalOpen.set(false);
+  }
+
+  isEmailValid(val: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+  }
+
+  isPhoneValid(val: string): boolean {
+    return /^\+?\d{9,15}$/.test(val);
+  }
+
+  isPersonalIdValid(val: string): boolean {
+    if (!val) return true;
+    return /^(?:\d{5,6}\/\d{4}|\d{9,10})$/.test(val);
+  }
+
+  isFormValid(): boolean {
+    return (
+      this.isEmailValid(this.email()) &&
+      this.isPhoneValid(this.phoneNumber()) &&
+      this.isPersonalIdValid(this.personalId()) &&
+      this.firstName().trim().length >= 2 &&
+      this.lastName().trim().length >= 2 &&
+      !!this.birthDate()
+    );
+  }
+
+  saveClient(): void {
+    this.showValidationErrors.set(true);
+    if (!this.isFormValid()) {
+      this.toastService.error('Please fix validation errors.');
+      return;
+    }
+
+    const payload = {
+      email: this.email().trim(),
+      firstName: this.firstName().trim(),
+      lastName: this.lastName().trim(),
+      personalId: this.personalId().trim() || null,
+      birthDate: this.birthDate(),
+      phoneNumber: this.phoneNumber().trim()
+    };
+
+    this.clientsService.createClient(payload).subscribe({
+      next: (created) => {
+        this.toastService.success('Client created successfully.');
+        this.clients.update(list => [created, ...list]);
+        this.closeModal();
+      },
+      error: (err) => {
+        console.error('[Clients] Create error:', err);
+        const message = err?.error?.message || err?.error?.Message || 'Failed to create client.';
+        this.toastService.error(message);
+      }
+    });
+  }
 
   filteredClients = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();

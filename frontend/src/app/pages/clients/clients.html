@@ -6,7 +6,7 @@
       <div>
         <h1>Clients</h1>
       </div>
-      <button class="btn-primary">
+      <button class="btn-primary" (click)="openModal()">
         + New Client
       </button>
     </header>
@@ -30,6 +30,80 @@
       @for (client of filteredClients(); track client.id) {
       <app-persona-card [client]="client" (delete)="deleteClient(client.id)" />
       }
+    </div>
+    }
+
+    @if (isModalOpen()) {
+    <div class="modal-backdrop" (click)="closeModal()">
+      <div class="modal-container glass-panel" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>New Client</h2>
+          <button class="modal-close-btn" (click)="closeModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <form (submit)="saveClient(); $event.preventDefault()" class="modal-form">
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="firstName">First Name</label>
+              <input type="text" id="firstName" name="firstName" [ngModel]="firstName()" (ngModelChange)="firstName.set($event)" required>
+              @if (showValidationErrors() && firstName().trim().length < 2) {
+                <span class="field-error">First name must be at least 2 characters.</span>
+              }
+            </div>
+            <div class="form-group">
+              <label for="lastName">Last Name</label>
+              <input type="text" id="lastName" name="lastName" [ngModel]="lastName()" (ngModelChange)="lastName.set($event)" required>
+              @if (showValidationErrors() && lastName().trim().length < 2) {
+                <span class="field-error">Last name must be at least 2 characters.</span>
+              }
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" [ngModel]="email()" (ngModelChange)="email.set($event)" required>
+            @if (showValidationErrors() && !isEmailValid(email())) {
+              <span class="field-error">Please enter a valid email address.</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="phoneNumber">Phone Number</label>
+            <input type="text" id="phoneNumber" name="phoneNumber" [ngModel]="phoneNumber()" (ngModelChange)="phoneNumber.set($event)" required placeholder="+420123456789">
+            @if (showValidationErrors() && !isPhoneValid(phoneNumber())) {
+              <span class="field-error">Phone number must be valid format (9-15 digits, optional leading +).</span>
+            }
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="personalId">Rodné číslo</label>
+              <input type="text" id="personalId" name="personalId" [ngModel]="personalId()" (ngModelChange)="personalId.set($event)" placeholder="YYMMDD/XXXX">
+              @if (showValidationErrors() && !isPersonalIdValid(personalId())) {
+                <span class="field-error">Must be 9-10 digits or in format XXXXXX/XXXX.</span>
+              }
+            </div>
+            <div class="form-group">
+              <label for="birthDate">Birth Date</label>
+              <input type="date" id="birthDate" name="birthDate" [ngModel]="birthDate()" (ngModelChange)="birthDate.set($event)" required>
+              @if (showValidationErrors() && !birthDate()) {
+                <span class="field-error">Birth date is required.</span>
+              }
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-secondary" (click)="closeModal()">Cancel</button>
+            <button type="submit" class="btn-primary">Save Client</button>
+          </div>
+        </form>
+      </div>
     </div>
     }
   </main>

@@ -11,6 +11,7 @@ export interface Client {
   lastName: string;
   personalId?: string;
   birthDate?: string;
+  phoneNumber?: string;
   role: string;
 }
 
@@ -41,5 +42,9 @@ export class ClientsService {
 
   getClient(id: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/client/${id}`);
+  }
+
+  createClient(clientData: any): Observable<Client> {
+    return this.http.post<Client>(`${this.apiUrl}/client`, clientData);
   }
 }
