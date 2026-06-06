@@ -16,7 +16,7 @@
       @if (isMenuOpen) {
       <div class="dropdown-menu">
         <button class="dropdown-item" type="button" (click)="closeMenu()">Open Details</button>
-        <button class="dropdown-item delete-option" type="button" (click)="closeMenu()">Delete</button>
+        <button class="dropdown-item delete-option" type="button" (click)="onDeleteClick($event)">Delete</button>
       </div>
       }
     </div>

@@ -28,7 +28,7 @@
     } @else {
     <div class="contracts-grid">
       @for (contract of filteredContracts(); track contract.id) {
-      <app-contract-card [contract]="contract" />
+      <app-contract-card [contract]="contract" (delete)="deleteContract(contract.id)" />
       }
     </div>
     }

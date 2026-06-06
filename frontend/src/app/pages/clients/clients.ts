@@ -44,6 +44,25 @@ export class Clients implements OnInit {
     this.searchQuery.set(target.value);
   }
 
+  deleteClient(id: string): void {
+    if (confirm('Are you sure you want to delete this client?')) {
+      this.clientsService.deleteClient(id).subscribe({
+        next: () => {
+          this.toastService.success('Client deleted successfully.');
+          this.clients.update(list => list.filter(c => c.id !== id));
+        },
+        error: (err) => {
+          console.error('[Clients] Delete error:', err);
+          const message =
+            err?.error?.message ||
+            err?.error?.Message ||
+            `Failed to delete client (HTTP ${err?.status ?? 'unknown'})`;
+          this.toastService.error(message);
+        }
+      });
+    }
+  }
+
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.clientsService.getClients().subscribe({

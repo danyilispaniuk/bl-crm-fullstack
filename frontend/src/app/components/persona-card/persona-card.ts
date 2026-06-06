@@ -1,4 +1,4 @@
-import { Component, Input, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
 import { Client } from '../../services/clients.service';
 
 @Component({
@@ -8,6 +8,7 @@ import { Client } from '../../services/clients.service';
 })
 export class PersonaCardComponent {
   @Input({ required: true }) client!: Client;
+  @Output() delete = new EventEmitter<void>();
   isMenuOpen = false;
 
   @HostListener('document:click')
@@ -18,6 +19,12 @@ export class PersonaCardComponent {
   toggleMenu(event: MouseEvent): void {
     event.stopPropagation();
     this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  onDeleteClick(event: MouseEvent): void {
+    event.stopPropagation();
+    this.closeMenu();
+    this.delete.emit();
   }
 
   // To close menu when clicking anywhere else

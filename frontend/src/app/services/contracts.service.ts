@@ -28,4 +28,8 @@ export class ContractsService {
   getContracts(): Observable<Contract[]> {
     return this.http.get<Contract[]>(`${this.apiUrl}/admin/contract`);
   }
+
+  deleteContract(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/admin/contract/${id}`);
+  }
 }

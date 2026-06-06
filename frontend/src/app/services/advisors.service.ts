@@ -34,4 +34,8 @@ export class AdvisorsService {
       return this.http.get<Advisor[]>(`${this.apiUrl}/advisor/lookup`);
     }
   }
+
+  deleteAdvisor(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/admin/advisor/${id}`);
+  }
 }

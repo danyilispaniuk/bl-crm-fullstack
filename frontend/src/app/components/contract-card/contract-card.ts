@@ -1,15 +1,16 @@
-import { Component, Input, HostListener } from '@angular/core';
-import { DatePipe, NgClass } from '@angular/common';
+import { Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { Contract } from '../../services/contracts.service';
 
 @Component({
   selector: 'app-contract-card',
-  imports: [DatePipe, NgClass],
+  imports: [DatePipe],
   templateUrl: './contract-card.html',
   styleUrl: './contract-card.scss'
 })
 export class ContractCardComponent {
   @Input({ required: true }) contract!: Contract;
+  @Output() delete = new EventEmitter<void>();
   isMenuOpen = false;
 
   @HostListener('document:click')
@@ -22,20 +23,13 @@ export class ContractCardComponent {
     this.isMenuOpen = !this.isMenuOpen;
   }
 
-  closeMenu(): void {
-    this.isMenuOpen = false;
+  onDeleteClick(event: MouseEvent): void {
+    event.stopPropagation();
+    this.closeMenu();
+    this.delete.emit();
   }
 
-  isContractActive(validityDateStr: string, endDateStr?: string): boolean {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    if (endDateStr) {
-      const endDate = new Date(endDateStr);
-      if (endDate < today) return false;
-    }
-
-    const validityDate = new Date(validityDateStr);
-    return validityDate >= today;
+  closeMenu(): void {
+    this.isMenuOpen = false;
   }
 }

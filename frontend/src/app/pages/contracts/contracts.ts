@@ -45,6 +45,25 @@ export class Contracts implements OnInit {
     this.searchQuery.set(target.value);
   }
 
+  deleteContract(id: string): void {
+    if (confirm('Are you sure you want to delete this contract?')) {
+      this.contractsService.deleteContract(id).subscribe({
+        next: () => {
+          this.toastService.success('Contract deleted successfully.');
+          this.contracts.update(list => list.filter(c => c.id !== id));
+        },
+        error: (err) => {
+          console.error('[Contracts] Delete error:', err);
+          const message =
+            err?.error?.message ||
+            err?.error?.Message ||
+            `Failed to delete contract (HTTP ${err?.status ?? 'unknown'})`;
+          this.toastService.error(message);
+        }
+      });
+    }
+  }
+
   isContractActive(validityDateStr: string, endDateStr?: string): boolean {
     const today = new Date();
     today.setHours(0, 0, 0, 0);

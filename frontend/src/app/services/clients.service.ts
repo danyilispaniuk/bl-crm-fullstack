@@ -34,4 +34,8 @@ export class ClientsService {
       return this.http.get<any[]>(`${this.apiUrl}/client/lookup`);
     }
   }
+
+  deleteClient(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/admin/client/${id}`);
+  }
 }

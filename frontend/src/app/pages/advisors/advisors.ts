@@ -44,6 +44,25 @@ export class Advisors implements OnInit {
     this.searchQuery.set(target.value);
   }
 
+  deleteAdvisor(id: string): void {
+    if (confirm('Are you sure you want to delete this advisor?')) {
+      this.advisorsService.deleteAdvisor(id).subscribe({
+        next: () => {
+          this.toastService.success('Advisor deleted successfully.');
+          this.advisors.update(list => list.filter(a => a.id !== id));
+        },
+        error: (err) => {
+          console.error('[Advisors] Delete error:', err);
+          const message =
+            err?.error?.message ||
+            err?.error?.Message ||
+            `Failed to delete advisor (HTTP ${err?.status ?? 'unknown'})`;
+          this.toastService.error(message);
+        }
+      });
+    }
+  }
+
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.advisorsService.getAdvisors().subscribe({
