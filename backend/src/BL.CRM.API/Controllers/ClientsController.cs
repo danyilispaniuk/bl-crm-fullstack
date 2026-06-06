@@ -76,7 +76,7 @@ public class ClientsController(IUserService userService, UserManager<Person> use
             Email = client.Email,
             FirstName = client.FirstName,
             LastName = client.LastName,
-            PersonalId = client.PersonalId,
+            PersonalId = client.PersonalId ?? string.Empty,
             BirthDate = client.BirthDate,
             Role = "Client"
         });
