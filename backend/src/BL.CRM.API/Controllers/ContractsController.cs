@@ -11,7 +11,7 @@ public class ContractsController(IContractService contractService) : ControllerB
 {
     [HttpGet("~/api/admin/contract")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<IEnumerable<ContractDto>>> GetAll()
+    public async Task<ActionResult<IEnumerable<ContractsDto>>> GetAll()
     {
         var contracts = await contractService.GetAllContractsAsync();
         return Ok(contracts);

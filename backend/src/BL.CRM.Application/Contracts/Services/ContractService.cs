@@ -52,7 +52,7 @@ public class ContractService(IApplicationDbContext dbContext) : IContractService
                     Email = p.Email ?? string.Empty,
                     FirstName = p.FirstName,
                     LastName = p.LastName,
-                    PersonalId = p.PersonalId,
+                    PersonalId = p.PersonalId ?? string.Empty,
                     BirthDate = p.BirthDate,
                     Role = "Advisor"
                 }).ToList()

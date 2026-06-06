@@ -16,7 +16,7 @@ public class UserService(IApplicationDbContext dbContext) : IUserService
                 Email = c.Email ?? string.Empty,
                 FirstName = c.FirstName,
                 LastName = c.LastName,
-                PersonalId = c.PersonalId,
+                PersonalId = c.PersonalId ?? string.Empty,
                 BirthDate = c.BirthDate,
                 Role = "Client"
             }).ToListAsync();
@@ -28,7 +28,7 @@ public class UserService(IApplicationDbContext dbContext) : IUserService
                 Email = a.Email ?? string.Empty,
                 FirstName = a.FirstName,
                 LastName = a.LastName,
-                PersonalId = a.PersonalId,
+                PersonalId = a.PersonalId ?? string.Empty,
                 BirthDate = a.BirthDate,
                 Role = "Advisor"
             }).ToListAsync();
@@ -45,7 +45,7 @@ public class UserService(IApplicationDbContext dbContext) : IUserService
                 Email = c.Email ?? string.Empty,
                 FirstName = c.FirstName,
                 LastName = c.LastName,
-                PersonalId = c.PersonalId,
+                PersonalId = c.PersonalId ?? string.Empty,
                 BirthDate = c.BirthDate,
                 Role = "Client"
             }).ToListAsync();
@@ -60,7 +60,7 @@ public class UserService(IApplicationDbContext dbContext) : IUserService
                 Email = a.Email ?? string.Empty,
                 FirstName = a.FirstName,
                 LastName = a.LastName,
-                PersonalId = a.PersonalId,
+                PersonalId = a.PersonalId ?? string.Empty,
                 BirthDate = a.BirthDate,
                 Role = "Advisor"
             }).ToListAsync();
@@ -76,7 +76,7 @@ public class UserService(IApplicationDbContext dbContext) : IUserService
                 Email = c.Email ?? string.Empty,
                 FirstName = c.FirstName,
                 LastName = c.LastName,
-                PersonalId = c.PersonalId,
+                PersonalId = c.PersonalId ?? string.Empty,
                 BirthDate = c.BirthDate,
                 Role = "Client"
             }).FirstOrDefaultAsync();
@@ -92,7 +92,7 @@ public class UserService(IApplicationDbContext dbContext) : IUserService
                 Email = a.Email ?? string.Empty,
                 FirstName = a.FirstName,
                 LastName = a.LastName,
-                PersonalId = a.PersonalId,
+                PersonalId = a.PersonalId ?? string.Empty,
                 BirthDate = a.BirthDate,
                 Role = "Advisor"
             }).FirstOrDefaultAsync();
