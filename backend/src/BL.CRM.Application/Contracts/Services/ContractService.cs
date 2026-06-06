@@ -125,4 +125,14 @@ public class ContractService(IApplicationDbContext dbContext) : IContractService
         }
         return !await query.AnyAsync(c => c.RegistrationNumber == registrationNumber);
     }
+
+    public async Task<bool> DeleteContractAsync(Guid id)
+    {
+        var contract = await dbContext.Contracts.FindAsync(id);
+        if (contract == null) return false;
+
+        dbContext.Contracts.Remove(contract);
+        await dbContext.SaveChangesAsync();
+        return true;
+    }
 }

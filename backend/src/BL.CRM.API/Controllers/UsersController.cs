@@ -176,4 +176,42 @@ public class UsersController(IUserService userService, UserManager<Person> userM
 
         return NoContent();
     }
+
+    [HttpDelete("~/api/admin/[controller]/clients/{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeleteClient(Guid id)
+    {
+        var client = await userManager.FindByIdAsync(id.ToString());
+        if (client == null || client is not Client)
+        {
+            return NotFound(new { Message = "Client not found." });
+        }
+
+        var result = await userManager.DeleteAsync(client);
+        if (!result.Succeeded)
+        {
+            return BadRequest(new { Message = "Failed to delete client." });
+        }
+
+        return NoContent();
+    }
+
+    [HttpDelete("~/api/admin/[controller]/advisors/{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeleteAdvisor(Guid id)
+    {
+        var advisor = await userManager.FindByIdAsync(id.ToString());
+        if (advisor == null || advisor is not Advisor)
+        {
+            return NotFound(new { Message = "Advisor not found." });
+        }
+
+        var result = await userManager.DeleteAsync(advisor);
+        if (!result.Succeeded)
+        {
+            return BadRequest(new { Message = "Failed to delete advisor." });
+        }
+
+        return NoContent();
+    }
 }

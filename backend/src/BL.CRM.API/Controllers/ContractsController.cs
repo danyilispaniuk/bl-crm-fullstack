@@ -74,4 +74,17 @@ public class ContractsController(IContractService contractService) : ControllerB
             return BadRequest(new { Message = "Failed to update contract. Ensure Client and Manager exist.", Error = ex.Message });
         }
     }
+
+    [HttpDelete("~/api/admin/[controller]/{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeleteContract(Guid id)
+    {
+        var deleted = await contractService.DeleteContractAsync(id);
+        if (!deleted)
+        {
+            return NotFound(new { Message = "Contract not found." });
+        }
+
+        return NoContent();
+    }
 }
