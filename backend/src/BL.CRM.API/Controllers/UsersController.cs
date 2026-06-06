@@ -91,4 +91,73 @@ public class UsersController(IUserService userService, UserManager<Person> userM
         if (advisor == null) return NotFound();
         return Ok(advisor);
     }
+
+    [HttpPut("~/api/[controller]/clients/{id}")]
+    [Authorize(Roles = "Admin,Advisor")]
+    public async Task<IActionResult> UpdateClient(Guid id, [FromBody] UpdateUserDto request)
+    {
+        var client = await userManager.FindByIdAsync(id.ToString());
+        if (client == null || client is not Client)
+        {
+            return NotFound(new { Message = "Client not found." });
+        }
+
+        return await UpdateUserAsync(client, request);
+    }
+
+    [HttpPut("~/api/admin/[controller]/advisors/{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UpdateAdvisor(Guid id, [FromBody] UpdateUserDto request)
+    {
+        var advisor = await userManager.FindByIdAsync(id.ToString());
+        if (advisor == null || advisor is not Advisor)
+        {
+            return NotFound(new { Message = "Advisor not found." });
+        }
+
+        return await UpdateUserAsync(advisor, request);
+    }
+
+    private async Task<IActionResult> UpdateUserAsync(Person user, UpdateUserDto request)
+    {
+        // Check if PersonalId is provided and already exists in the system (excluding the current user)
+        if (!string.IsNullOrWhiteSpace(request.PersonalId))
+        {
+            var isPersonalIdTaken = userManager.Users.Any(u => u.PersonalId == request.PersonalId && u.Id != user.Id);
+            if (isPersonalIdTaken)
+            {
+                return BadRequest(new { Message = "This Personal ID is already registered to another user." });
+            }
+        }
+
+        // Handle Email Update (requires changing UserName as well in Identity)
+        if (user.Email != request.Email)
+        {
+            var existingEmail = await userManager.FindByEmailAsync(request.Email);
+            if (existingEmail != null && existingEmail.Id != user.Id)
+            {
+                return BadRequest(new { Message = "Email is already in use by another user." });
+            }
+            user.Email = request.Email;
+            user.UserName = request.Email;
+        }
+
+        user.FirstName = request.FirstName;
+        user.LastName = request.LastName;
+        user.PersonalId = request.PersonalId;
+        user.BirthDate = request.BirthDate;
+        user.UpdatedAt = DateTime.UtcNow;
+
+        var result = await userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(error.Code, error.Description);
+            }
+            return BadRequest(ModelState);
+        }
+
+        return NoContent();
+    }
 }
