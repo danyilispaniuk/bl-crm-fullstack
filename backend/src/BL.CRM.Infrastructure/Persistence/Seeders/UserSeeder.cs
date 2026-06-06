@@ -10,7 +10,7 @@ public class UserSeeder(UserManager<Person> userManager)
         // Seed Admin
         if (!userManager.Users.Any(u => u.Email == "admin@test.com"))
         {
-            var admin = new Advisor
+            var admin = new Person
             {
                 UserName = "admin@test.com",
                 Email = "admin@test.com",

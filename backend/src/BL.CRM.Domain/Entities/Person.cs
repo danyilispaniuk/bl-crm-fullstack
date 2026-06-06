@@ -6,7 +6,7 @@ namespace BL.CRM.Domain.Entities;
 /// <summary>
 /// Abstract base class for all people in the system.
 /// </summary>
-public abstract class Person : IdentityUser<Guid>
+public class Person : IdentityUser<Guid>
 {
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
