@@ -92,6 +92,9 @@
   color: #334155;
   cursor: pointer;
   width: 100%;
+  text-decoration: none;
+  display: block;
+  box-sizing: border-box;
   transition: background 0.15s;
 
   &:hover {

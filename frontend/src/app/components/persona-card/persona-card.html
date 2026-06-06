@@ -15,7 +15,11 @@
       </button>
       @if (isMenuOpen) {
       <div class="dropdown-menu">
-        <button class="dropdown-item" type="button" (click)="closeMenu()">Open Details</button>
+        @if (client.role === 'Client') {
+        <a class="dropdown-item" [routerLink]="['/client', client.id]">Open Details</a>
+        } @else if (client.role === 'Advisor') {
+        <a class="dropdown-item" [routerLink]="['/advisor', client.id]">Open Details</a>
+        }
         <button class="dropdown-item delete-option" type="button" (click)="onDeleteClick($event)">Delete</button>
       </div>
       }

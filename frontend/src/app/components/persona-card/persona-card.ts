@@ -1,12 +1,16 @@
-import { Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { Client } from '../../services/clients.service';
 
 @Component({
   selector: 'app-persona-card',
+  imports: [RouterLink],
   templateUrl: './persona-card.html',
   styleUrl: './persona-card.scss'
 })
 export class PersonaCardComponent {
+  private router = inject(Router);
+
   @Input({ required: true }) client!: Client;
   @Output() delete = new EventEmitter<void>();
   isMenuOpen = false;
@@ -19,6 +23,14 @@ export class PersonaCardComponent {
   toggleMenu(event: MouseEvent): void {
     event.stopPropagation();
     this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  onOpenDetailsClick(event: MouseEvent): void {
+    event.stopPropagation();
+    this.closeMenu();
+    if (this.client.role === 'Client') {
+      this.router.navigate(['/clients', this.client.id]);
+    }
   }
 
   onDeleteClick(event: MouseEvent): void {

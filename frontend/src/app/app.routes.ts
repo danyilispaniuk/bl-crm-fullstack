@@ -5,6 +5,8 @@ export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', loadComponent: () => import('./pages/login/login').then(m => m.Login) },
   { path: 'clients', loadComponent: () => import('./pages/clients/clients').then(m => m.Clients), canActivate: [authGuard] },
+  { path: 'client/:id', loadComponent: () => import('./pages/client-detail/client-detail').then(m => m.ClientDetail), canActivate: [authGuard] },
   { path: 'advisors', loadComponent: () => import('./pages/advisors/advisors').then(m => m.Advisors), canActivate: [authGuard] },
+  { path: 'advisor/:id', loadComponent: () => import('./pages/advisor-detail/advisor-detail').then(m => m.AdvisorDetail), canActivate: [authGuard] },
   { path: 'contracts', loadComponent: () => import('./pages/contracts/contracts').then(m => m.Contracts), canActivate: [authGuard] }
 ];

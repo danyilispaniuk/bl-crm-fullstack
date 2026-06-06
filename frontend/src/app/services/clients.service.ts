@@ -38,4 +38,8 @@ export class ClientsService {
   deleteClient(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/admin/client/${id}`);
   }
+
+  getClient(id: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/client/${id}`);
+  }
 }
