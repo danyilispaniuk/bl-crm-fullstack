@@ -17,7 +17,7 @@
         </button>
         @if (isMenuOpen) {
         <div class="dropdown-menu">
-          <button class="dropdown-item" type="button" (click)="closeMenu()">Open Details</button>
+          <a class="dropdown-item" [routerLink]="['/contract', contract.id]">Open Details</a>
           <button class="dropdown-item delete-option" type="button" (click)="onDeleteClick($event)">Delete</button>
         </div>
         }

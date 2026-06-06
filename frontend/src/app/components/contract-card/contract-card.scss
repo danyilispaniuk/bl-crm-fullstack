@@ -120,6 +120,8 @@
   cursor: pointer;
   width: 100%;
   transition: background 0.15s;
+  text-decoration: none;
+  box-sizing: border-box;
 
   &:hover {
     background: #f8fafc;

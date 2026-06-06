@@ -4,6 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+import { Client } from './clients.service';
+
 export interface Contract {
   id: string;
   registrationNumber: string;
@@ -15,6 +17,7 @@ export interface Contract {
   clientName: string;
   contractManagerId: string;
   contractManagerName: string;
+  participants?: Client[];
 }
 
 @Injectable({
@@ -31,5 +34,9 @@ export class ContractsService {
 
   deleteContract(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/admin/contract/${id}`);
+  }
+
+  getContract(id: string): Observable<Contract> {
+    return this.http.get<Contract>(`${this.apiUrl}/contract/${id}`);
   }
 }
