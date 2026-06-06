@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace BL.CRM.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/contract")]
 public class ContractsController(IContractService contractService) : ControllerBase
 {
-    [HttpGet("~/api/admin/[controller]")]
+    [HttpGet("~/api/admin/contract")]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<IEnumerable<ContractDto>>> GetAll()
     {
@@ -17,7 +17,7 @@ public class ContractsController(IContractService contractService) : ControllerB
         return Ok(contracts);
     }
 
-    [HttpGet("~/api/[controller]/{id}")]
+    [HttpGet("{id}")]
     [Authorize(Roles = "Admin,Advisor")]
     public async Task<ActionResult<ContractDto>> GetById(Guid id)
     {
@@ -26,7 +26,7 @@ public class ContractsController(IContractService contractService) : ControllerB
         return Ok(contract);
     }
 
-    [HttpPost("~/api/[controller]")]
+    [HttpPost]
     [Authorize(Roles = "Admin,Advisor")]
     public async Task<IActionResult> CreateContract([FromBody] CreateContractDto request)
     {
@@ -47,7 +47,7 @@ public class ContractsController(IContractService contractService) : ControllerB
             return BadRequest(new { Message = "Failed to create contract. Ensure Client and Manager exist.", Error = ex.Message });
         }
     }
-    [HttpPut("~/api/[controller]/{id}")]
+    [HttpPut("{id}")]
     [Authorize(Roles = "Admin,Advisor")]
     public async Task<IActionResult> UpdateContract(Guid id, [FromBody] UpdateContractDto request)
     {
@@ -75,7 +75,7 @@ public class ContractsController(IContractService contractService) : ControllerB
         }
     }
 
-    [HttpDelete("~/api/admin/[controller]/{id}")]
+    [HttpDelete("~/api/admin/contract/{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteContract(Guid id)
     {

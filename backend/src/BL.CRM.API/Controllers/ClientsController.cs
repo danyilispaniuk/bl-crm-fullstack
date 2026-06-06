@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace BL.CRM.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class UsersController(IUserService userService, UserManager<Person> userManager) : ControllerBase
+[Route("api/client")]
+public class ClientsController(IUserService userService, UserManager<Person> userManager) : ControllerBase
 {
-    [HttpGet("~/api/admin/[controller]/clients")]
+    [HttpGet("~/api/admin/client")]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<IEnumerable<UserDto>>> GetClients()
     {
@@ -19,7 +19,7 @@ public class UsersController(IUserService userService, UserManager<Person> userM
         return Ok(clients);
     }
 
-    [HttpGet("~/api/[controller]/clients/{id}")]
+    [HttpGet("{id}")]
     [Authorize(Roles = "Admin,Advisor")]
     public async Task<ActionResult<UserDto>> GetClientById(Guid id)
     {
@@ -28,11 +28,10 @@ public class UsersController(IUserService userService, UserManager<Person> userM
         return Ok(client);
     }
 
-    [HttpPost("~/api/[controller]/clients")]
+    [HttpPost]
     [Authorize(Roles = "Admin,Advisor")]
     public async Task<IActionResult> CreateClient([FromBody] CreateClientDto request)
     {
-        // Check if PersonalId exists
         if (!string.IsNullOrWhiteSpace(request.PersonalId))
         {
             var isPersonalIdTaken = userManager.Users.Any(u => u.PersonalId == request.PersonalId);
@@ -83,15 +82,7 @@ public class UsersController(IUserService userService, UserManager<Person> userM
         });
     }
 
-    [HttpGet("~/api/admin/[controller]/advisors")]
-    [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<IEnumerable<UserDto>>> GetAdvisors()
-    {
-        var advisors = await userService.GetAllAdvisorsAsync();
-        return Ok(advisors);
-    }
-
-    [HttpGet("~/api/[controller]/clients/lookup")]
+    [HttpGet("lookup")]
     [Authorize(Roles = "Admin,Advisor")]
     public async Task<ActionResult<IEnumerable<UserLookupDto>>> GetClientsLookup()
     {
@@ -99,24 +90,7 @@ public class UsersController(IUserService userService, UserManager<Person> userM
         return Ok(lookups);
     }
 
-    [HttpGet("~/api/[controller]/advisors/lookup")]
-    [Authorize(Roles = "Admin,Advisor")]
-    public async Task<ActionResult<IEnumerable<UserLookupDto>>> GetAdvisorsLookup()
-    {
-        var lookups = await userService.GetAdvisorsLookupAsync();
-        return Ok(lookups);
-    }
-
-    [HttpGet("~/api/[controller]/advisors/{id}")]
-    [Authorize(Roles = "Admin,Advisor")]
-    public async Task<ActionResult<UserDto>> GetAdvisorById(Guid id)
-    {
-        var advisor = await userService.GetAdvisorByIdAsync(id);
-        if (advisor == null) return NotFound();
-        return Ok(advisor);
-    }
-
-    [HttpPut("~/api/[controller]/clients/{id}")]
+    [HttpPut("{id}")]
     [Authorize(Roles = "Admin,Advisor")]
     public async Task<IActionResult> UpdateClient(Guid id, [FromBody] UpdateUserDto request)
     {
@@ -129,22 +103,27 @@ public class UsersController(IUserService userService, UserManager<Person> userM
         return await UpdateUserAsync(client, request);
     }
 
-    [HttpPut("~/api/admin/[controller]/advisors/{id}")]
+    [HttpDelete("~/api/admin/client/{id}")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> UpdateAdvisor(Guid id, [FromBody] UpdateUserDto request)
+    public async Task<IActionResult> DeleteClient(Guid id)
     {
-        var advisor = await userManager.FindByIdAsync(id.ToString());
-        if (advisor == null || advisor is not Advisor)
+        var client = await userManager.FindByIdAsync(id.ToString());
+        if (client == null || client is not Client)
         {
-            return NotFound(new { Message = "Advisor not found." });
+            return NotFound(new { Message = "Client not found." });
         }
 
-        return await UpdateUserAsync(advisor, request);
+        var result = await userManager.DeleteAsync(client);
+        if (!result.Succeeded)
+        {
+            return BadRequest(new { Message = "Failed to delete client." });
+        }
+
+        return NoContent();
     }
 
     private async Task<IActionResult> UpdateUserAsync(Person user, UpdateUserDto request)
     {
-        // Check if PersonalId exists
         if (!string.IsNullOrWhiteSpace(request.PersonalId))
         {
             var isPersonalIdTaken = userManager.Users.Any(u => u.PersonalId == request.PersonalId && u.Id != user.Id);
@@ -154,7 +133,6 @@ public class UsersController(IUserService userService, UserManager<Person> userM
             }
         }
 
-        // Email update
         if (user.Email != request.Email)
         {
             var existingEmail = await userManager.FindByEmailAsync(request.Email);
@@ -180,44 +158,6 @@ public class UsersController(IUserService userService, UserManager<Person> userM
                 ModelState.AddModelError(error.Code, error.Description);
             }
             return BadRequest(ModelState);
-        }
-
-        return NoContent();
-    }
-
-    [HttpDelete("~/api/admin/[controller]/clients/{id}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> DeleteClient(Guid id)
-    {
-        var client = await userManager.FindByIdAsync(id.ToString());
-        if (client == null || client is not Client)
-        {
-            return NotFound(new { Message = "Client not found." });
-        }
-
-        var result = await userManager.DeleteAsync(client);
-        if (!result.Succeeded)
-        {
-            return BadRequest(new { Message = "Failed to delete client." });
-        }
-
-        return NoContent();
-    }
-
-    [HttpDelete("~/api/admin/[controller]/advisors/{id}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> DeleteAdvisor(Guid id)
-    {
-        var advisor = await userManager.FindByIdAsync(id.ToString());
-        if (advisor == null || advisor is not Advisor)
-        {
-            return NotFound(new { Message = "Advisor not found." });
-        }
-
-        var result = await userManager.DeleteAsync(advisor);
-        if (!result.Succeeded)
-        {
-            return BadRequest(new { Message = "Failed to delete advisor." });
         }
 
         return NoContent();
