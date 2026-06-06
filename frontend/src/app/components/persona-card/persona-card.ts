@@ -11,7 +11,7 @@ import { Client } from '../../services/clients.service';
 export class PersonaCardComponent {
   private router = inject(Router);
 
-  @Input({ required: true }) client!: Client;
+  @Input({ required: true }) person!: Client;
   @Output() delete = new EventEmitter<void>();
   isMenuOpen = false;
 
@@ -28,8 +28,8 @@ export class PersonaCardComponent {
   onOpenDetailsClick(event: MouseEvent): void {
     event.stopPropagation();
     this.closeMenu();
-    if (this.client.role === 'Client') {
-      this.router.navigate(['/clients', this.client.id]);
+    if (this.person.role === 'Client') {
+      this.router.navigate(['/clients', this.person.id]);
     }
   }
 

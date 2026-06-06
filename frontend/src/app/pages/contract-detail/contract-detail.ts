@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ContractsService, Contract } from '../../services/contracts.service';
 import { Client } from '../../services/clients.service';
@@ -18,8 +18,13 @@ export class ContractDetail implements OnInit {
   private contractsService = inject(ContractsService);
   private platformId = inject(PLATFORM_ID);
   private toastService = inject(ToastService);
+  private location = inject(Location);
 
   contract = signal<Contract | null>(null);
+
+  goBack(): void {
+    this.location.back();
+  }
   isLoading = signal(true);
 
   ngOnInit(): void {

@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { isPlatformBrowser, Location } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ClientsService, Client } from '../../services/clients.service';
 import { ContractsService, Contract } from '../../services/contracts.service';
 import { ToastService } from '../../services/toast.service';
@@ -9,7 +9,7 @@ import { ContractCardComponent } from '../../components/contract-card/contract-c
 
 @Component({
   selector: 'app-client-detail',
-  imports: [NavigationComponent, ContractCardComponent, RouterLink],
+  imports: [NavigationComponent, ContractCardComponent],
   templateUrl: './client-detail.html',
   styleUrl: './client-detail.scss'
 })
@@ -20,8 +20,13 @@ export class ClientDetail implements OnInit {
   private contractsService = inject(ContractsService);
   private platformId = inject(PLATFORM_ID);
   private toastService = inject(ToastService);
+  private location = inject(Location);
 
   client = signal<Client | null>(null);
+
+  goBack(): void {
+    this.location.back();
+  }
   contracts = signal<Contract[]>([]);
   isLoadingClient = signal(true);
   isLoadingContracts = signal(true);

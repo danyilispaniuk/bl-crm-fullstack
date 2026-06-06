@@ -3,101 +3,101 @@
 
   <main class="main-content">
     <div class="detail-header">
-      <a routerLink="/contracts" class="back-link">
+      <button (click)="goBack()" class="back-link">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="19" y1="12" x2="5" y2="12"></line>
           <polyline points="12 19 5 12 12 5"></polyline>
         </svg>
-        Back to Contracts
-      </a>
+        Go Back
+      </button>
 
       @if (contract()) {
-        <button class="delete-btn" (click)="deleteContract()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="3 6 5 6 21 6"></polyline>
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-          </svg>
-          Delete Contract
-        </button>
+      <button class="delete-btn" (click)="deleteContract()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+        Delete Contract
+      </button>
       }
     </div>
 
     @if (isLoading()) {
-      <div class="state-message">Loading contract details…</div>
+    <div class="state-message">Loading contract details…</div>
     } @else if (contract(); as c) {
-      <div class="contract-card-panel glass-panel">
-        <div class="panel-header">
-          <div class="panel-title-section">
-            <span class="category-tag">Contract</span>
-            <h1>No. {{ c.registrationNumber }}</h1>
-            <p class="institution-name">{{ c.institution }}</p>
-          </div>
+    <div class="contract-card-panel glass-panel">
+      <div class="panel-header">
+        <div class="panel-title-section">
+          <span class="category-tag">Contract</span>
+          <h1>No. {{ c.registrationNumber }}</h1>
+          <p class="institution-name">{{ c.institution }}</p>
         </div>
-
-        <div class="details-grid">
-          <div class="detail-item">
-            <span class="detail-label">Start Date</span>
-            <span class="detail-value">{{ c.startDate }}</span>
-          </div>
-
-          <div class="detail-item">
-            <span class="detail-label">Validity Date</span>
-            <span class="detail-value">{{ c.validityDate }}</span>
-          </div>
-
-          <div class="detail-item">
-            <span class="detail-label">End Date</span>
-            <span class="detail-value">{{ c.endDate || '—' }}</span>
-          </div>
-        </div>
-
-        <div class="relations-section">
-          <h2>Related parties</h2>
-          <div class="relations-grid">
-            <div class="relation-card">
-              <span class="relation-label">Client</span>
-              <a [routerLink]="['/client', c.clientId]" class="relation-link">
-                <div class="relation-info">
-                  <span class="relation-name">{{ c.clientName }}</span>
-                  <span class="view-profile-hint">View Profile →</span>
-                </div>
-              </a>
-            </div>
-
-            <div class="relation-card">
-              <span class="relation-label">Contract Manager</span>
-              <a [routerLink]="['/advisor', c.contractManagerId]" class="relation-link">
-                <div class="relation-info">
-                  <span class="relation-name">{{ c.contractManagerName }}</span>
-                  <span class="view-profile-hint">View Profile →</span>
-                </div>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        @if (getOtherParticipants(c).length > 0) {
-          <div class="relations-section" style="margin-top: 2rem;">
-            <h2>Other Participants</h2>
-            <div class="relations-grid">
-              @for (p of getOtherParticipants(c); track p.id) {
-                <div class="relation-card">
-                  <span class="relation-label">{{ p.role }}</span>
-                  <a [routerLink]="[p.role === 'Advisor' ? '/advisor' : '/client', p.id]" class="relation-link">
-                    <div class="relation-info">
-                      <span class="relation-name">{{ p.firstName }} {{ p.lastName }}</span>
-                      <span class="view-profile-hint">View Profile →</span>
-                    </div>
-                  </a>
-                </div>
-              }
-            </div>
-          </div>
-        }
-
       </div>
+
+      <div class="details-grid">
+        <div class="detail-item">
+          <span class="detail-label">Start Date</span>
+          <span class="detail-value">{{ c.startDate }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Validity Date</span>
+          <span class="detail-value">{{ c.validityDate }}</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">End Date</span>
+          <span class="detail-value">{{ c.endDate || '—' }}</span>
+        </div>
+      </div>
+
+      <div class="relations-section">
+        <h2>Related parties</h2>
+        <div class="relations-grid">
+          <div class="relation-card">
+            <span class="relation-label">Client</span>
+            <a [routerLink]="['/client', c.clientId]" class="relation-link">
+              <div class="relation-info">
+                <span class="relation-name">{{ c.clientName }}</span>
+                <span class="view-profile-hint">View Profile →</span>
+              </div>
+            </a>
+          </div>
+
+          <div class="relation-card">
+            <span class="relation-label">Contract Manager</span>
+            <a [routerLink]="['/advisor', c.contractManagerId]" class="relation-link">
+              <div class="relation-info">
+                <span class="relation-name">{{ c.contractManagerName }}</span>
+                <span class="view-profile-hint">View Profile →</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      @if (getOtherParticipants(c).length > 0) {
+      <div class="relations-section" style="margin-top: 2rem;">
+        <h2>Other Participants</h2>
+        <div class="relations-grid">
+          @for (p of getOtherParticipants(c); track p.id) {
+          <div class="relation-card">
+            <span class="relation-label">{{ p.role }}</span>
+            <a [routerLink]="[p.role === 'Advisor' ? '/advisor' : '/client', p.id]" class="relation-link">
+              <div class="relation-info">
+                <span class="relation-name">{{ p.firstName }} {{ p.lastName }}</span>
+                <span class="view-profile-hint">View Profile →</span>
+              </div>
+            </a>
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+    </div>
     }
   </main>
 </div>

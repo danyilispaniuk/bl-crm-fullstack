@@ -25,7 +25,7 @@
     } @else {
     <div class="advisors-grid">
       @for (advisor of filteredAdvisors(); track advisor.id) {
-      <app-persona-card [client]="advisor" (delete)="deleteAdvisor(advisor.id)" />
+      <app-persona-card [person]="advisor" (delete)="deleteAdvisor(advisor.id)" />
       }
     </div>
     }
