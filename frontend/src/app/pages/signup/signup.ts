@@ -35,7 +35,7 @@ export class Signup {
   }
 
   isPersonalIdValid(val: string): boolean {
-    if (!val) return true;
+    if (!val) return false;
     return /^(?:\d{5,6}\/\d{4}|\d{9,10})$/.test(val);
   }
 
@@ -64,7 +64,7 @@ export class Signup {
       password: this.password,
       firstName: this.firstName.trim(),
       lastName: this.lastName.trim(),
-      personalId: this.personalId.trim() || null,
+      personalId: this.personalId.trim(),
       birthDate: this.birthDate,
       phoneNumber: this.phoneNumber.trim()
     };
