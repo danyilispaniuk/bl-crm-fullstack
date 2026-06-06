@@ -15,6 +15,20 @@ export interface Client {
   role: string;
 }
 
+export interface ClientLookup {
+  id: string;
+  name: string;
+}
+
+export interface CreateClientRequest {
+  email: string;
+  firstName: string;
+  lastName: string;
+  personalId?: string | null;
+  birthDate: string;
+  phoneNumber: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -23,16 +37,18 @@ export class ClientsService {
   private apiUrl = environment.apiUrl;
   private platformId = inject(PLATFORM_ID);
 
-  getClients(): Observable<any[]> {
+  getClients(): Observable<Client[]> {
     let role = null;
     if (isPlatformBrowser(this.platformId)) {
       role = localStorage.getItem('role');
     }
     
     if (role === 'Admin') {
-      return this.http.get<any[]>(`${this.apiUrl}/admin/client`);
+      return this.http.get<Client[]>(`${this.apiUrl}/admin/client`);
     } else {
-      return this.http.get<any[]>(`${this.apiUrl}/client/lookup`);
+      // Cast the lookup elements as Client since they are not used elsewhere in this version,
+      // or define a separate endpoint when advisor client list is implemented.
+      return this.http.get<Client[]>(`${this.apiUrl}/client/lookup`);
     }
   }
 
@@ -40,11 +56,11 @@ export class ClientsService {
     return this.http.delete<void>(`${this.apiUrl}/admin/client/${id}`);
   }
 
-  getClient(id: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/client/${id}`);
+  getClient(id: string): Observable<Client> {
+    return this.http.get<Client>(`${this.apiUrl}/client/${id}`);
   }
 
-  createClient(clientData: any): Observable<Client> {
+  createClient(clientData: CreateClientRequest): Observable<Client> {
     return this.http.post<Client>(`${this.apiUrl}/client`, clientData);
   }
 }
