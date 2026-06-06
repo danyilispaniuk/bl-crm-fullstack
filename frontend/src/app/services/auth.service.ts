@@ -19,6 +19,16 @@ export interface LoginResponse {
   };
 }
 
+export interface RegisterAdvisorRequest {
+  email?: string;
+  password?: string;
+  firstName?: string;
+  lastName?: string;
+  personalId?: string | null;
+  birthDate?: string;
+  phoneNumber?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -28,5 +38,9 @@ export class AuthService {
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, credentials);
+  }
+
+  registerAdvisor(data: RegisterAdvisorRequest): Observable<{ message?: string; Message?: string }> {
+    return this.http.post<{ message?: string; Message?: string }>(`${this.apiUrl}/auth/signup`, data);
   }
 }

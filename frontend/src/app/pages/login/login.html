@@ -19,6 +19,10 @@
       <button type="submit" class="btn-primary w-full" [disabled]="isLoading">
         {{ isLoading ? 'Signing in…' : 'Sign In' }}
       </button>
+
+      <div class="signup-footer">
+        Don't have an advisor account? <a routerLink="/signup" class="signup-link">Sign Up</a>
+      </div>
     </form>
   </div>
 </div>
