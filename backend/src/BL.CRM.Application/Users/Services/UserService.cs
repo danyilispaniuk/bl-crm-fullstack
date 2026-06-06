@@ -97,4 +97,26 @@ public class UserService(IApplicationDbContext dbContext) : IUserService
                 Role = "Advisor"
             }).FirstOrDefaultAsync();
     }
+
+    public async Task<IEnumerable<UserLookupDto>> GetClientsLookupAsync()
+    {
+        return await dbContext.Clients
+            .Select(c => new UserLookupDto
+            {
+                Id = c.Id,
+                FullName = c.FirstName + " " + c.LastName
+            })
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<UserLookupDto>> GetAdvisorsLookupAsync()
+    {
+        return await dbContext.Advisors
+            .Select(a => new UserLookupDto
+            {
+                Id = a.Id,
+                FullName = a.FirstName + " " + a.LastName
+            })
+            .ToListAsync();
+    }
 }

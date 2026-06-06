@@ -83,6 +83,22 @@ public class UsersController(IUserService userService, UserManager<Person> userM
         return Ok(advisors);
     }
 
+    [HttpGet("~/api/[controller]/clients/lookup")]
+    [Authorize(Roles = "Admin,Advisor")]
+    public async Task<ActionResult<IEnumerable<UserLookupDto>>> GetClientsLookup()
+    {
+        var lookups = await userService.GetClientsLookupAsync();
+        return Ok(lookups);
+    }
+
+    [HttpGet("~/api/[controller]/advisors/lookup")]
+    [Authorize(Roles = "Admin,Advisor")]
+    public async Task<ActionResult<IEnumerable<UserLookupDto>>> GetAdvisorsLookup()
+    {
+        var lookups = await userService.GetAdvisorsLookupAsync();
+        return Ok(lookups);
+    }
+
     [HttpGet("~/api/[controller]/advisors/{id}")]
     [Authorize(Roles = "Admin,Advisor")]
     public async Task<ActionResult<UserDto>> GetAdvisorById(Guid id)

@@ -9,4 +9,7 @@ public interface IUserService
     Task<IEnumerable<UserDto>> GetAllAdvisorsAsync();
     Task<UserDto?> GetClientByIdAsync(Guid id);
     Task<UserDto?> GetAdvisorByIdAsync(Guid id);
+    
+    Task<IEnumerable<UserLookupDto>> GetClientsLookupAsync();
+    Task<IEnumerable<UserLookupDto>> GetAdvisorsLookupAsync();
 }
