@@ -92,6 +92,7 @@ public class AuthController(UserManager<Person> userManager) : ControllerBase
         {
             UserName = request.Email,
             Email = request.Email,
+            PhoneNumber = request.PhoneNumber,
             FirstName = request.FirstName,
             LastName = request.LastName,
             PersonalId = request.PersonalId,

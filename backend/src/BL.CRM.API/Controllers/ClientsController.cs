@@ -54,6 +54,7 @@ public class ClientsController(IUserService userService, UserManager<Person> use
         {
             UserName = request.Email,
             Email = request.Email,
+            PhoneNumber = request.PhoneNumber,
             FirstName = request.FirstName,
             LastName = request.LastName,
             PersonalId = request.PersonalId,
@@ -78,6 +79,7 @@ public class ClientsController(IUserService userService, UserManager<Person> use
             LastName = client.LastName,
             PersonalId = client.PersonalId ?? string.Empty,
             BirthDate = client.BirthDate,
+            PhoneNumber = client.PhoneNumber ?? string.Empty,
             Role = "Client"
         });
     }

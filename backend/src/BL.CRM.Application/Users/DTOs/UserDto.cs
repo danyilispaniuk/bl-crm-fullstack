@@ -8,5 +8,6 @@ public class UserDto
     public string LastName { get; set; } = string.Empty;
     public string PersonalId { get; set; } = string.Empty;
     public DateOnly BirthDate { get; set; }
+    public string PhoneNumber { get; set; } = string.Empty;
     public string Role { get; set; } = string.Empty;
 }

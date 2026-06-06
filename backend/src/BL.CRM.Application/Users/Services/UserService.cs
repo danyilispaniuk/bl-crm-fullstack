@@ -18,6 +18,7 @@ public class UserService(IApplicationDbContext dbContext) : IUserService
                 LastName = c.LastName,
                 PersonalId = c.PersonalId ?? string.Empty,
                 BirthDate = c.BirthDate,
+                PhoneNumber = c.PhoneNumber ?? string.Empty,
                 Role = "Client"
             }).ToListAsync();
 
@@ -30,6 +31,7 @@ public class UserService(IApplicationDbContext dbContext) : IUserService
                 LastName = a.LastName,
                 PersonalId = a.PersonalId ?? string.Empty,
                 BirthDate = a.BirthDate,
+                PhoneNumber = a.PhoneNumber ?? string.Empty,
                 Role = "Advisor"
             }).ToListAsync();
 
@@ -47,6 +49,7 @@ public class UserService(IApplicationDbContext dbContext) : IUserService
                 LastName = c.LastName,
                 PersonalId = c.PersonalId ?? string.Empty,
                 BirthDate = c.BirthDate,
+                PhoneNumber = c.PhoneNumber ?? string.Empty,
                 Role = "Client"
             }).ToListAsync();
     }
@@ -62,6 +65,7 @@ public class UserService(IApplicationDbContext dbContext) : IUserService
                 LastName = a.LastName,
                 PersonalId = a.PersonalId ?? string.Empty,
                 BirthDate = a.BirthDate,
+                PhoneNumber = a.PhoneNumber ?? string.Empty,
                 Role = "Advisor"
             }).ToListAsync();
     }
@@ -78,6 +82,7 @@ public class UserService(IApplicationDbContext dbContext) : IUserService
                 LastName = c.LastName,
                 PersonalId = c.PersonalId ?? string.Empty,
                 BirthDate = c.BirthDate,
+                PhoneNumber = c.PhoneNumber ?? string.Empty,
                 Role = "Client"
             }).FirstOrDefaultAsync();
     }
@@ -94,6 +99,7 @@ public class UserService(IApplicationDbContext dbContext) : IUserService
                 LastName = a.LastName,
                 PersonalId = a.PersonalId ?? string.Empty,
                 BirthDate = a.BirthDate,
+                PhoneNumber = a.PhoneNumber ?? string.Empty,
                 Role = "Advisor"
             }).FirstOrDefaultAsync();
     }
