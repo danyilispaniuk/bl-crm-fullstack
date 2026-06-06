@@ -1,0 +1,36 @@
+<div class="dashboard-layout">
+  <app-navigation></app-navigation>
+
+  <main class="main-content">
+    <header class="content-header">
+      <div>
+        <h1>Contracts</h1>
+      </div>
+      <button class="btn-primary">
+        + New Contract
+      </button>
+    </header>
+
+    <div class="search-bar glass-panel">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+        stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" placeholder="Search contracts by registration number, institution, client or manager..." class="search-input"
+        [value]="searchQuery()" (input)="onSearchChange($event)">
+    </div>
+
+    @if (isLoading()) {
+    <div class="state-message">Loading contracts…</div>
+    } @else if (filteredContracts().length === 0) {
+    <div class="state-message">No contracts found.</div>
+    } @else {
+    <div class="contracts-grid">
+      @for (contract of filteredContracts(); track contract.id) {
+      <app-contract-card [contract]="contract" />
+      }
+    </div>
+    }
+  </main>
+</div>

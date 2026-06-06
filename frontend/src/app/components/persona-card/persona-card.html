@@ -1,0 +1,35 @@
+<div class="persona-card">
+  <div class="persona-header">
+    <div class="persona-info">
+      <h3>{{ client.firstName }} {{ client.lastName }}</h3>
+      <p class="persona-email">{{ client.email }}</p>
+    </div>
+    <div class="action-menu-container">
+      <button class="action-btn" aria-label="More options" (click)="toggleMenu($event)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="1"></circle>
+          <circle cx="19" cy="12" r="1"></circle>
+          <circle cx="5" cy="12" r="1"></circle>
+        </svg>
+      </button>
+      @if (isMenuOpen) {
+      <div class="dropdown-menu">
+        <button class="dropdown-item" type="button" (click)="closeMenu()">Open Details</button>
+        <button class="dropdown-item delete-option" type="button" (click)="closeMenu()">Delete</button>
+      </div>
+      }
+    </div>
+  </div>
+
+  <div class="persona-details">
+    <div class="detail-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+      <span>{{ client.personalId || '—' }}</span>
+    </div>
+  </div>
+</div>
