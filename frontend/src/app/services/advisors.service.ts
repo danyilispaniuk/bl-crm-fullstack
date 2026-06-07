@@ -43,4 +43,8 @@ export class AdvisorsService {
   getAdvisor(id: string): Observable<Advisor> {
     return this.http.get<Advisor>(`${this.apiUrl}/advisor/${id}`);
   }
+
+  getAdvisorsLookup(): Observable<{ id: string; fullName: string }[]> {
+    return this.http.get<{ id: string; fullName: string }[]>(`${this.apiUrl}/advisor/lookup`);
+  }
 }

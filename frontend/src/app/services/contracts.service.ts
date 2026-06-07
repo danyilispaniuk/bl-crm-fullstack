@@ -20,6 +20,17 @@ export interface Contract {
   participants?: Client[];
 }
 
+export interface CreateContractRequest {
+  registrationNumber: string;
+  institution: string;
+  startDate: string;
+  validityDate: string;
+  endDate?: string | null;
+  clientId: string;
+  contractManagerId: string;
+  participantIds: string[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -38,5 +49,9 @@ export class ContractsService {
 
   getContract(id: string): Observable<Contract> {
     return this.http.get<Contract>(`${this.apiUrl}/contract/${id}`);
+  }
+
+  createContract(contractData: CreateContractRequest): Observable<Contract> {
+    return this.http.post<Contract>(`${this.apiUrl}/contract`, contractData);
   }
 }

@@ -60,6 +60,10 @@ export class ClientsService {
     return this.http.get<Client>(`${this.apiUrl}/client/${id}`);
   }
 
+  getClientsLookup(): Observable<{ id: string; fullName: string }[]> {
+    return this.http.get<{ id: string; fullName: string }[]>(`${this.apiUrl}/client/lookup`);
+  }
+
   createClient(clientData: CreateClientRequest): Observable<Client> {
     return this.http.post<Client>(`${this.apiUrl}/client`, clientData);
   }

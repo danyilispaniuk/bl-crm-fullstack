@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, PLATFORM_ID, signal, computed } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { ContractsService, Contract } from '../../services/contracts.service';
 import { ToastService } from '../../services/toast.service';
 import { NavigationComponent } from '../../components/navigation/navigation';
@@ -8,7 +8,7 @@ import { ContractCardComponent } from '../../components/contract-card/contract-c
 
 @Component({
   selector: 'app-contracts',
-  imports: [NavigationComponent, ContractCardComponent],
+  imports: [NavigationComponent, ContractCardComponent, RouterLink],
   templateUrl: './contracts.html',
   styleUrl: './contracts.scss'
 })
@@ -33,10 +33,10 @@ export class Contracts implements OnInit {
       const client = (contract.clientName || '').toLowerCase();
       const manager = (contract.contractManagerName || '').toLowerCase();
 
-      return regNum.includes(query) || 
-             inst.includes(query) || 
-             client.includes(query) || 
-             manager.includes(query);
+      return regNum.includes(query) ||
+        inst.includes(query) ||
+        client.includes(query) ||
+        manager.includes(query);
     });
   });
 
