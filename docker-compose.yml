@@ -30,18 +30,15 @@ services:
   # OPTIONAL: Frontend container. 
   # Uncomment this if you want to run the frontend in Docker instead of via cmd.
   # -------------------------------------------------------------------------
-  # frontend:
-  #   image: node:20-alpine
-  #   container_name: bl-crm-frontend
-  #   working_dir: /app
-  #   volumes:
-  #     - ./frontend:/app
-  #   ports:
-  #     - "4200:4200"
-  #   command: >
-  #     sh -c "npm install && npx ng serve --host 0.0.0.0 --poll 2000"
-  #   depends_on:
-  #     - backend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: bl-crm-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
 
 volumes:
   sqlvolume:
