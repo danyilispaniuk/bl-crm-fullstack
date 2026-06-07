@@ -1,5 +1,7 @@
 using BL.CRM.Application.Users.DTOs;
 using BL.CRM.Application.Users.Interfaces;
+using BL.CRM.Application.Contracts.Interfaces;
+using BL.CRM.Application.Contracts.DTOs;
 using BL.CRM.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -9,7 +11,10 @@ namespace BL.CRM.API.Controllers;
 
 [ApiController]
 [Route("api/advisor")]
-public class AdvisorsController(IUserService userService, UserManager<Person> userManager) : ControllerBase
+public class AdvisorsController(
+    IUserService userService, 
+    UserManager<Person> userManager,
+    IContractService contractService) : ControllerBase
 {
     [HttpGet("~/api/admin/advisor")]
     [Authorize(Roles = "Admin")]
@@ -26,6 +31,18 @@ public class AdvisorsController(IUserService userService, UserManager<Person> us
         var advisor = await userService.GetAdvisorByIdAsync(id);
         if (advisor == null) return NotFound();
         return Ok(advisor);
+    }
+
+
+    [HttpGet("{id}/contracts")]
+    [Authorize(Roles = "Admin,Advisor")]
+    public async Task<ActionResult<AdvisorContractsDto>> GetAdvisorContracts(Guid id)
+    {
+        var advisor = await userService.GetAdvisorByIdAsync(id);
+        if (advisor == null) return NotFound(new { Message = "Advisor not found." });
+
+        var contracts = await contractService.GetContractsByAdvisorIdAsync(id);
+        return Ok(contracts);
     }
 
     [HttpGet("lookup")]
