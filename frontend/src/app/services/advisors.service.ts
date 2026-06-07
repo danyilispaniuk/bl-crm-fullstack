@@ -49,6 +49,6 @@ export class AdvisorsService {
   }
 
   updateAdvisor(id: string, advisorData: any): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/admin/advisor/${id}`, advisorData);
+    return this.http.put<void>(`${this.apiUrl}/advisor/${id}`, advisorData);
   }
 }

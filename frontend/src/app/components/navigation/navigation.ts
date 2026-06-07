@@ -13,10 +13,15 @@ export class NavigationComponent implements OnInit {
   private platformId = inject(PLATFORM_ID);
 
   isAdmin = signal(false);
+  isAdvisor = signal(false);
+  advisorId = signal<string | null>(null);
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      this.isAdmin.set(localStorage.getItem('role') === 'Admin');
+      const role = localStorage.getItem('role');
+      this.isAdmin.set(role === 'Admin');
+      this.isAdvisor.set(role === 'Advisor');
+      this.advisorId.set(localStorage.getItem('userId'));
     }
   }
 

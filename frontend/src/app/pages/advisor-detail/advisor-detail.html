@@ -22,7 +22,7 @@
           <h1>{{ a.firstName }} {{ a.lastName }}</h1>
           <span class="role-badge">{{ a.role }}</span>
         </div>
-        @if (currentUserRole() === 'Admin' && !isEditing()) {
+        @if (canEditProfile() && !isEditing()) {
           <button class="btn-primary" (click)="startEdit(a)">
             Edit Profile
           </button>

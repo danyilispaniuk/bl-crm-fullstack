@@ -53,10 +53,19 @@ public class AdvisorsController(
         return Ok(lookups);
     }
 
-    [HttpPut("~/api/admin/advisor/{id}")]
-    [Authorize(Roles = "Admin")]
+    [HttpPut("{id}")]
+    [Authorize(Roles = "Admin,Advisor")]
     public async Task<IActionResult> UpdateAdvisor(Guid id, [FromBody] UpdateUserDto request)
     {
+        if (User.IsInRole("Advisor"))
+        {
+            var loggedInId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (loggedInId != id.ToString())
+            {
+                return StatusCode(403, new { Message = "You are not authorized to edit this advisor's profile." });
+            }
+        }
+
         var advisor = await userManager.FindByIdAsync(id.ToString());
         if (advisor == null || advisor is not Advisor)
         {
