@@ -12,7 +12,8 @@ namespace BL.CRM.API.Controllers;
 [ApiController]
 [Route("api/client")]
 public class ClientsController(
-    IUserService userService, 
+    IUserService userService,
+    IUserExportService exportService,
     UserManager<Person> userManager,
     IContractService contractService) : ControllerBase
 {
@@ -113,6 +114,15 @@ public class ClientsController(
     {
         var lookups = await userService.GetClientsLookupAsync();
         return Ok(lookups);
+    }
+
+    [HttpGet("export/csv")]
+    [Authorize(Roles = "Admin,Advisor")]
+    public async Task<IActionResult> ExportClientsToCsv()
+    {
+        var csvBytes = await exportService.ExportClientsToCsvAsync();
+        var fileName = $"clients_{DateTime.UtcNow:yyyyMMdd_HHmmss}.csv";
+        return File(csvBytes, "text/csv; charset=utf-8", fileName);
     }
 
     [HttpPut("{id}")]

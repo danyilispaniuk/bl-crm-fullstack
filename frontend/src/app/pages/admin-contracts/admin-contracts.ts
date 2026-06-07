@@ -22,6 +22,27 @@ export class AdminContracts implements OnInit {
   searchQuery = signal('');
   isLoading = signal(true);
 
+  exportCsv(): void {
+    this.contractsService.exportContractsCsv().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `contracts_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        this.toastService.success('CSV file exported successfully.');
+      },
+      error: (err) => {
+        console.error('[AdminContracts] Export error:', err);
+        const message = err?.error?.message || err?.error?.Message || 'Failed to export CSV.';
+        this.toastService.error(message);
+      }
+    });
+  }
+
   filteredContracts = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
     const allContracts = this.contracts();

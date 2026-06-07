@@ -1,94 +1,99 @@
 <div class="signup-container">
   <div class="signup-card glass-panel">
-    
+
     @if (!isRegistered) {
-      <div class="signup-header">
-        <h2>Advisor Signup</h2>
-        <p>Register a new advisor account</p>
+    <div class="signup-header">
+      <h2>Advisor Signup</h2>
+      <p>Register a new advisor account</p>
+    </div>
+
+    <form class="signup-form" (ngSubmit)="onSignup()">
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="input-label" for="firstName">First Name</label>
+          <input type="text" id="firstName" name="firstName" [(ngModel)]="firstName" class="input-field" required>
+          @if (showValidationErrors && firstName.trim().length < 2) { <span class="field-error">Min 2 characters
+            required.</span>
+            }
+        </div>
+        <div class="form-group">
+          <label class="input-label" for="lastName">Last Name</label>
+          <input type="text" id="lastName" name="lastName" [(ngModel)]="lastName" class="input-field" required>
+          @if (showValidationErrors && lastName.trim().length < 2) { <span class="field-error">Min 2 characters
+            required.</span>
+            }
+        </div>
       </div>
 
-      <form class="signup-form" (ngSubmit)="onSignup()">
-        <div class="form-row-2">
-          <div class="form-group">
-            <label class="input-label" for="firstName">First Name</label>
-            <input type="text" id="firstName" name="firstName" [(ngModel)]="firstName" class="input-field" required>
-            @if (showValidationErrors && firstName.trim().length < 2) {
-              <span class="field-error">Min 2 characters required.</span>
-            }
-          </div>
-          <div class="form-group">
-            <label class="input-label" for="lastName">Last Name</label>
-            <input type="text" id="lastName" name="lastName" [(ngModel)]="lastName" class="input-field" required>
-            @if (showValidationErrors && lastName.trim().length < 2) {
-              <span class="field-error">Min 2 characters required.</span>
-            }
-          </div>
-        </div>
+      <div class="form-group">
+        <label class="input-label" for="email">Email Address</label>
+        <input type="email" id="email" name="email" [(ngModel)]="email" class="input-field"
+          placeholder="advisor@company.com" required>
+        @if (showValidationErrors && !isEmailValid(email)) {
+        <span class="field-error">Please enter a valid email address.</span>
+        }
+      </div>
 
+      <div class="form-group">
+        <label class="input-label" for="password">Password</label>
+        <input type="password" id="password" name="password" [(ngModel)]="password" class="input-field"
+          placeholder="Min 8 characters" required>
+        @if (showValidationErrors && password.length < 8) { <span class="field-error">Password must be at least 8
+          characters.</span>
+          }
+      </div>
+
+      <div class="form-group">
+        <label class="input-label" for="phoneNumber">Phone Number</label>
+        <input type="text" id="phoneNumber" name="phoneNumber" [(ngModel)]="phoneNumber" class="input-field"
+          placeholder="+420123456789" required>
+        @if (showValidationErrors && !isPhoneValid(phoneNumber)) {
+        <span class="field-error">Invalid phone format (9-15 digits, opt +).</span>
+        }
+      </div>
+
+      <div class="form-row-2">
         <div class="form-group">
-          <label class="input-label" for="email">Email Address</label>
-          <input type="email" id="email" name="email" [(ngModel)]="email" class="input-field" placeholder="advisor@company.com" required>
-          @if (showValidationErrors && !isEmailValid(email)) {
-            <span class="field-error">Please enter a valid email address.</span>
+          <label class="input-label" for="personalId">Rodné číslo</label>
+          <input type="text" id="personalId" name="personalId" [(ngModel)]="personalId" class="input-field"
+            placeholder="YYMMDD/XXXX">
+          @if (showValidationErrors && !isPersonalIdValid(personalId)) {
+          <span class="field-error">Must be 9-10 digits or YYMMDD/XXXX.</span>
           }
         </div>
-
         <div class="form-group">
-          <label class="input-label" for="password">Password</label>
-          <input type="password" id="password" name="password" [(ngModel)]="password" class="input-field" placeholder="Min 8 characters" required>
-          @if (showValidationErrors && password.length < 8) {
-            <span class="field-error">Password must be at least 8 characters.</span>
+          <label class="input-label" for="birthDate">Birth Date</label>
+          <input type="date" id="birthDate" name="birthDate" [(ngModel)]="birthDate" class="input-field" required>
+          @if (showValidationErrors && !birthDate) {
+          <span class="field-error">Birth date is required.</span>
           }
         </div>
+      </div>
 
-        <div class="form-group">
-          <label class="input-label" for="phoneNumber">Phone Number</label>
-          <input type="text" id="phoneNumber" name="phoneNumber" [(ngModel)]="phoneNumber" class="input-field" placeholder="+420123456789" required>
-          @if (showValidationErrors && !isPhoneValid(phoneNumber)) {
-            <span class="field-error">Invalid phone format (9-15 digits, opt +).</span>
-          }
-        </div>
+      <button type="submit" class="btn-primary w-full">
+        Sign Up
+      </button>
 
-        <div class="form-row-2">
-          <div class="form-group">
-            <label class="input-label" for="personalId">Rodné číslo</label>
-            <input type="text" id="personalId" name="personalId" [(ngModel)]="personalId" class="input-field" placeholder="YYMMDD/XXXX">
-            @if (showValidationErrors && !isPersonalIdValid(personalId)) {
-              <span class="field-error">Must be 9-10 digits or YYMMDD/XXXX.</span>
-            }
-          </div>
-          <div class="form-group">
-            <label class="input-label" for="birthDate">Birth Date</label>
-            <input type="date" id="birthDate" name="birthDate" [(ngModel)]="birthDate" class="input-field" required>
-            @if (showValidationErrors && !birthDate) {
-              <span class="field-error">Birth date is required.</span>
-            }
-          </div>
-        </div>
-
-        <button type="submit" class="btn-primary w-full" [disabled]="isLoading">
-          {{ isLoading ? 'Registering…' : 'Sign Up' }}
-        </button>
-
-        <div class="login-footer">
-          Already have an account? <a routerLink="/login" class="login-link">Sign In</a>
-        </div>
-      </form>
+      <div class="login-footer">
+        Already have an account? <a routerLink="/login" class="login-link">Sign In</a>
+      </div>
+    </form>
     } @else {
-      <div class="success-view">
-        <div class="success-icon-wrapper">
-          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
-            stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-          </svg>
-        </div>
-        <h2>Registration Successful!</h2>
-        <p class="success-message">
-          Your advisor account has been successfully registered. You can now use your credentials to log into the application.
-        </p>
-        <a routerLink="/login" class="btn-primary w-full btn-link">Go to Sign In</a>
+    <div class="success-view">
+      <div class="success-icon-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10b981"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
       </div>
+      <h2>Registration Successful!</h2>
+      <p class="success-message">
+        Your advisor account has been successfully registered. You can now use your credentials to log into the
+        application.
+      </p>
+      <a routerLink="/login" class="btn-primary w-full btn-link">Go to Sign In</a>
+    </div>
     }
 
   </div>

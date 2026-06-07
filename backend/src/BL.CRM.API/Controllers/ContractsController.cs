@@ -7,7 +7,7 @@ namespace BL.CRM.API.Controllers;
 
 [ApiController]
 [Route("api/contract")]
-public class ContractsController(IContractService contractService) : ControllerBase
+public class ContractsController(IContractService contractService, IContractExportService contractExportService) : ControllerBase
 {
     [HttpGet("~/api/admin/contract")]
     [Authorize(Roles = "Admin")]
@@ -15,6 +15,15 @@ public class ContractsController(IContractService contractService) : ControllerB
     {
         var contracts = await contractService.GetAllContractsAsync();
         return Ok(contracts);
+    }
+
+    [HttpGet("~/api/admin/contract/export/csv")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> ExportContractsToCsv()
+    {
+        var csvBytes = await contractExportService.ExportContractsToCsvAsync();
+        var fileName = $"contracts_{DateTime.UtcNow:yyyyMMdd_HHmmss}.csv";
+        return File(csvBytes, "text/csv; charset=utf-8", fileName);
     }
 
     [HttpGet("{id}")]

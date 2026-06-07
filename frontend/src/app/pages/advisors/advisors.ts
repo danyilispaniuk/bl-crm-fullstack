@@ -19,6 +19,28 @@ export class Advisors implements OnInit {
   advisors = signal<Advisor[]>([]);
   searchQuery = signal('');
   isLoading = signal(true);
+  isAdmin = signal(false);
+
+  exportCsv(): void {
+    this.advisorsService.exportAdvisorsCsv().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `advisors_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        this.toastService.success('CSV file exported successfully.');
+      },
+      error: (err) => {
+        console.error('[Advisors] Export error:', err);
+        const message = err?.error?.message || err?.error?.Message || 'Failed to export CSV.';
+        this.toastService.error(message);
+      }
+    });
+  }
 
   loadAdvisors(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -84,6 +106,10 @@ export class Advisors implements OnInit {
   }
 
   ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      const role = localStorage.getItem('role');
+      this.isAdmin.set(role === 'Admin');
+    }
     this.loadAdvisors();
   }
 }

@@ -1,4 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
@@ -13,6 +14,8 @@ import { ToastService } from '../../services/toast.service';
 export class Signup {
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
+  private router = inject(Router);
+  private platformId = inject(PLATFORM_ID);
 
   email = '';
   password = '';
@@ -71,14 +74,59 @@ export class Signup {
 
     this.authService.registerAdvisor(payload).subscribe({
       next: () => {
-        this.isLoading = false;
-        this.isRegistered = true;
-        this.toastService.success('Registration successful!');
+        this.toastService.success('Registration successful! Logging in...');
+        
+        // Auto login with the registered credentials
+        this.authService.login({ email: payload.email, password: payload.password }).subscribe({
+          next: (res) => {
+            this.isLoading = false;
+            this.isRegistered = true;
+            if (isPlatformBrowser(this.platformId)) {
+              if (res.token) {
+                localStorage.setItem('token', res.token);
+              }
+              if (res.user) {
+                localStorage.setItem('role', res.user.role);
+                localStorage.setItem('userId', res.user.id);
+              }
+            }
+            this.router.navigate(['/contracts']);
+          },
+          error: (loginErr) => {
+            console.error('[Signup] Auto-login error:', loginErr);
+            this.isLoading = false;
+            this.isRegistered = true;
+            this.toastService.warning('Registration succeeded, but automatic login failed. Please login manually.');
+            this.router.navigate(['/login']);
+          }
+        });
       },
       error: (err) => {
         this.isLoading = false;
-        const message = err?.error?.message || err?.error?.Message || 'Registration failed. Please try again.';
-        this.toastService.error(message);
+        let errorMessage = 'Registration failed. Please try again.';
+        if (err?.error) {
+          if (typeof err.error === 'string') {
+            errorMessage = err.error;
+          } else if (err.error.message || err.error.Message) {
+            errorMessage = err.error.message || err.error.Message;
+          } else if (typeof err.error === 'object') {
+            const errors: string[] = [];
+            for (const key in err.error) {
+              if (Object.prototype.hasOwnProperty.call(err.error, key)) {
+                const value = err.error[key];
+                if (Array.isArray(value)) {
+                  errors.push(...value);
+                } else if (typeof value === 'string') {
+                  errors.push(value);
+                }
+              }
+            }
+            if (errors.length > 0) {
+              errorMessage = errors.join(' ');
+            }
+          }
+        }
+        this.toastService.error(errorMessage);
       }
     });
   }
