@@ -68,4 +68,7 @@ export class ContractsService {
     return this.http.get<AdvisorContractsResponse>(`${this.apiUrl}/advisor/${advisorId}/contracts`);
   }
 
+  getClientContracts(clientId: string): Observable<Contract[]> {
+    return this.http.get<Contract[]>(`${this.apiUrl}/client/${clientId}/contracts`);
+  }
 }
