@@ -75,15 +75,11 @@ body {
   font-weight: 400;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s;
+  transition: background-color 0.2s;
 }
 
 .btn-dark-blue:hover {
-  background: #1d4ed8;
-}
-
-.btn-dark-blue:active {
-  transform: scale(0.98);
+  background: #1e293b;
 }
 
 .input-field {

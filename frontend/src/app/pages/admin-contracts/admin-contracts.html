@@ -4,15 +4,13 @@
   <main class="main-content">
     <header class="content-header">
       <div>
-        <h1>Contracts (Admin)</h1>
+        <h1>Contracts</h1>
       </div>
       <div style="display: flex; gap: 12px; align-items: center;">
         <a class="btn-primary" routerLink="/contracts/new">
           + New Contract
         </a>
-        <button class="btn-dark-blue" (click)="exportCsv()">
-          Create .csv file
-        </button>
+        <button class="btn-dark-blue" (click)="exportCsv()">Create .csv file</button>
       </div>
     </header>
 
@@ -22,20 +20,20 @@
         <circle cx="11" cy="11" r="8"></circle>
         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
       </svg>
-      <input type="text" placeholder="Search contracts by registration number, institution, client or manager..." class="search-input"
-        [value]="searchQuery()" (input)="onSearchChange($event)">
+      <input type="text" placeholder="Search contracts by registration number, institution, client or manager..."
+        class="search-input" [value]="searchQuery()" (input)="onSearchChange($event)">
     </div>
 
     @if (isLoading()) {
-      <div class="state-message">Loading contracts…</div>
+    <div class="state-message">Loading contracts…</div>
     } @else if (filteredContracts().length === 0) {
-      <div class="state-message">No contracts found.</div>
+    <div class="state-message">No contracts found.</div>
     } @else {
-      <div class="contracts-grid">
-        @for (contract of filteredContracts(); track contract.id) {
-          <app-contract-card [contract]="contract" (delete)="deleteContract(contract.id)" />
-        }
-      </div>
+    <div class="contracts-grid">
+      @for (contract of filteredContracts(); track contract.id) {
+      <app-contract-card [contract]="contract" (delete)="deleteContract(contract.id)" />
+      }
+    </div>
     }
   </main>
 </div>
