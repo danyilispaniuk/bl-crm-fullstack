@@ -1,5 +1,7 @@
 using BL.CRM.Application.Users.DTOs;
 using BL.CRM.Application.Users.Interfaces;
+using BL.CRM.Application.Contracts.Interfaces;
+using BL.CRM.Application.Contracts.DTOs;
 using BL.CRM.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -9,10 +11,13 @@ namespace BL.CRM.API.Controllers;
 
 [ApiController]
 [Route("api/client")]
-public class ClientsController(IUserService userService, UserManager<Person> userManager) : ControllerBase
+public class ClientsController(
+    IUserService userService, 
+    UserManager<Person> userManager,
+    IContractService contractService) : ControllerBase
 {
-    [HttpGet("~/api/admin/client")]
-    [Authorize(Roles = "Admin")]
+    [HttpGet]
+    [Authorize(Roles = "Admin,Advisor")]
     public async Task<ActionResult<IEnumerable<UserDto>>> GetClients()
     {
         var clients = await userService.GetAllClientsAsync();
@@ -26,6 +31,24 @@ public class ClientsController(IUserService userService, UserManager<Person> use
         var client = await userService.GetClientByIdAsync(id);
         if (client == null) return NotFound();
         return Ok(client);
+    }
+
+    [HttpGet("{id}/contracts")]
+    [Authorize(Roles = "Admin,Advisor,Client")]
+    public async Task<ActionResult<IEnumerable<ContractsDto>>> GetClientContracts(Guid id)
+    {
+        Guid? advisorId = null;
+        if (User.IsInRole("Advisor"))
+        {
+            var advisorIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (Guid.TryParse(advisorIdClaim, out var parsedId))
+            {
+                advisorId = parsedId;
+            }
+        }
+
+        var contracts = await contractService.GetContractsByClientIdAsync(id, advisorId);
+        return Ok(contracts);
     }
 
     [HttpPost]

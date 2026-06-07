@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, PLATFORM_ID, signal, computed } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ContractsService, Contract } from '../../services/contracts.service';
 import { ToastService } from '../../services/toast.service';
 import { NavigationComponent } from '../../components/navigation/navigation';
@@ -16,18 +16,21 @@ export class Contracts implements OnInit {
   private contractsService = inject(ContractsService);
   private platformId = inject(PLATFORM_ID);
   private toastService = inject(ToastService);
+  private router = inject(Router);
 
+  isAdvisor = signal(false);
   contracts = signal<Contract[]>([]);
+  managedContracts = signal<Contract[]>([]);
+  participatingContracts = signal<Contract[]>([]);
   searchQuery = signal('');
   isLoading = signal(true);
+  hiddenContractIds = signal<Set<string>>(new Set());
 
-  filteredContracts = computed(() => {
-    const query = this.searchQuery().toLowerCase().trim();
-    const allContracts = this.contracts();
-    if (!query) {
-      return allContracts;
-    }
-    return allContracts.filter(contract => {
+  private filterList(list: Contract[], query: string): Contract[] {
+    const hiddenSet = this.hiddenContractIds();
+    const visibleList = list.filter(c => !hiddenSet.has(c.id));
+    if (!query) return visibleList;
+    return visibleList.filter(contract => {
       const regNum = (contract.registrationNumber || '').toLowerCase();
       const inst = (contract.institution || '').toLowerCase();
       const client = (contract.clientName || '').toLowerCase();
@@ -38,6 +41,35 @@ export class Contracts implements OnInit {
         client.includes(query) ||
         manager.includes(query);
     });
+  }
+
+  hideContract(id: string): void {
+    const hiddenSet = new Set(this.hiddenContractIds());
+    hiddenSet.add(id);
+    this.hiddenContractIds.set(hiddenSet);
+    localStorage.setItem('hiddenContractIds', JSON.stringify(Array.from(hiddenSet)));
+    this.toastService.success('Contract hidden.');
+  }
+
+  showAllHidden(): void {
+    this.hiddenContractIds.set(new Set());
+    localStorage.removeItem('hiddenContractIds');
+    this.toastService.success('All hidden contracts are visible now.');
+  }
+
+  filteredAllContracts = computed(() => {
+    const query = this.searchQuery().toLowerCase().trim();
+    return this.filterList(this.contracts(), query);
+  });
+
+  filteredManagedContracts = computed(() => {
+    const query = this.searchQuery().toLowerCase().trim();
+    return this.filterList(this.managedContracts(), query);
+  });
+
+  filteredParticipatingContracts = computed(() => {
+    const query = this.searchQuery().toLowerCase().trim();
+    return this.filterList(this.participatingContracts(), query);
   });
 
   onSearchChange(event: Event): void {
@@ -51,6 +83,8 @@ export class Contracts implements OnInit {
         next: () => {
           this.toastService.success('Contract deleted successfully.');
           this.contracts.update(list => list.filter(c => c.id !== id));
+          this.managedContracts.update(list => list.filter(c => c.id !== id));
+          this.participatingContracts.update(list => list.filter(c => c.id !== id));
         },
         error: (err) => {
           console.error('[Contracts] Delete error:', err);
@@ -79,22 +113,61 @@ export class Contracts implements OnInit {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      this.contractsService.getContracts().subscribe({
-        next: (data) => {
-          console.log('[Contracts] API response count:', data.length, data);
-          this.contracts.set(data);
-          this.isLoading.set(false);
-        },
-        error: (err) => {
-          console.error('[Contracts] API error:', err);
-          this.isLoading.set(false);
-          const message =
-            err?.error?.message ||
-            err?.error?.Message ||
-            `Failed to load contracts (HTTP ${err?.status ?? 'unknown'})`;
-          this.toastService.error(message);
+      const hidden = localStorage.getItem('hiddenContractIds');
+      if (hidden) {
+        try {
+          this.hiddenContractIds.set(new Set(JSON.parse(hidden)));
+        } catch (e) {
+          console.error('Failed to parse hidden contract IDs', e);
         }
-      });
+      }
+
+      const role = localStorage.getItem('role');
+      let userId = localStorage.getItem('userId');
+
+      if (!userId && role === 'Advisor') {
+        const token = localStorage.getItem('token');
+        if (token) {
+          try {
+            const payloadBase64 = token.split('.')[1];
+            const payloadJson = window.atob(payloadBase64);
+            const payload = JSON.parse(payloadJson);
+            userId = payload.nameid || payload.sub || null;
+            if (userId) {
+              localStorage.setItem('userId', userId);
+            }
+          } catch (e) {
+            console.error('Failed to parse JWT token', e);
+          }
+        }
+      }
+
+      if (role === 'Admin') {
+        this.router.navigate(['/admin/contracts']);
+        return;
+      }
+
+      this.isAdvisor.set(true);
+      if (userId) {
+        this.contractsService.getAdvisorContracts(userId).subscribe({
+          next: (data) => {
+            this.managedContracts.set(data.managedContracts || []);
+            this.participatingContracts.set(data.participatingContracts || []);
+            this.isLoading.set(false);
+          },
+          error: (err) => {
+            console.error('[Contracts] API error:', err);
+            this.isLoading.set(false);
+            const message =
+              err?.error?.message ||
+              err?.error?.Message ||
+              `Failed to load advisor contracts (HTTP ${err?.status ?? 'unknown'})`;
+            this.toastService.error(message);
+          }
+        });
+      } else {
+        this.isLoading.set(false);
+      }
     }
   }
 }

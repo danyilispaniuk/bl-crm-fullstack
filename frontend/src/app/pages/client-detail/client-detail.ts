@@ -172,10 +172,9 @@ export class ClientDetail implements OnInit {
   }
 
   fetchContracts(clientId: string): void {
-    this.contractsService.getContracts().subscribe({
+    this.contractsService.getClientContracts(clientId).subscribe({
       next: (data) => {
-        const clientContracts = data.filter(c => c.clientId === clientId);
-        this.contracts.set(clientContracts);
+        this.contracts.set(data);
         this.isLoadingContracts.set(false);
       },
       error: (err) => {

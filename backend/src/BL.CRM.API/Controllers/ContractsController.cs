@@ -23,6 +23,24 @@ public class ContractsController(IContractService contractService) : ControllerB
     {
         var contract = await contractService.GetContractByIdAsync(id);
         if (contract == null) return NotFound();
+
+        if (User.IsInRole("Advisor"))
+        {
+            var advisorIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(advisorIdClaim, out var advisorId))
+            {
+                return Forbid();
+            }
+
+            var isManager = contract.ContractManagerId == advisorId;
+            var isParticipant = contract.Participants.Any(p => p.Id == advisorId);
+
+            if (!isManager && !isParticipant)
+            {
+                return StatusCode(403, new { Message = "You are not authorized to view this contract." });
+            }
+        }
+
         return Ok(contract);
     }
 
@@ -53,6 +71,27 @@ public class ContractsController(IContractService contractService) : ControllerB
     {
         try
         {
+            if (User.IsInRole("Advisor"))
+            {
+                var advisorIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (!Guid.TryParse(advisorIdClaim, out var advisorId))
+                {
+                    return Forbid();
+                }
+
+                var existingContract = await contractService.GetContractByIdAsync(id);
+                if (existingContract == null)
+                {
+                    return NotFound(new { Message = "Contract not found." });
+                }
+
+                var isManager = existingContract.ContractManagerId == advisorId;
+                if (!isManager)
+                {
+                    return StatusCode(403, new { Message = "You are not authorized to edit this contract." });
+                }
+            }
+
             var isUnique = await contractService.IsRegistrationNumberUniqueAsync(request.RegistrationNumber, id);
             if (!isUnique)
             {

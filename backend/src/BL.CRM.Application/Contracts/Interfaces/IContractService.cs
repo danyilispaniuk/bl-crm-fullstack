@@ -10,4 +10,6 @@ public interface IContractService
     Task<ContractDto?> UpdateContractAsync(Guid id, UpdateContractDto request);
     Task<bool> DeleteContractAsync(Guid id);
     Task<bool> IsRegistrationNumberUniqueAsync(string registrationNumber, Guid? excludeContractId = null);
+    Task<AdvisorContractsDto> GetContractsByAdvisorIdAsync(Guid advisorId);
+    Task<IEnumerable<ContractsDto>> GetContractsByClientIdAsync(Guid clientId, Guid? advisorId = null);
 }

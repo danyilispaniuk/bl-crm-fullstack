@@ -19,7 +19,12 @@
         @if (isMenuOpen) {
         <div class="dropdown-menu">
           <a class="dropdown-item" [routerLink]="['/contract', contract.id]">Open Details</a>
+          @if (isAdvisor) {
+          <button class="dropdown-item hide-option" type="button" (click)="onHideClick($event)">Hide</button>
+          }
+          @if (isAdmin) {
           <button class="dropdown-item delete-option" type="button" (click)="onDeleteClick($event)">Delete</button>
+          }
         </div>
         }
       </div>

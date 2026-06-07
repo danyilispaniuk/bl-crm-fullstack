@@ -31,6 +31,11 @@ export interface CreateContractRequest {
   participantIds: string[];
 }
 
+export interface AdvisorContractsResponse {
+  managedContracts: Contract[];
+  participatingContracts: Contract[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -57,5 +62,13 @@ export class ContractsService {
 
   updateContract(id: string, contractData: any): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/contract/${id}`, contractData);
+  }
+
+  getAdvisorContracts(advisorId: string): Observable<AdvisorContractsResponse> {
+    return this.http.get<AdvisorContractsResponse>(`${this.apiUrl}/advisor/${advisorId}/contracts`);
+  }
+
+  getClientContracts(clientId: string): Observable<Contract[]> {
+    return this.http.get<Contract[]>(`${this.apiUrl}/client/${clientId}/contracts`);
   }
 }

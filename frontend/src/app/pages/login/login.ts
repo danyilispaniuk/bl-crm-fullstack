@@ -26,8 +26,12 @@ export class Login implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       const role = localStorage.getItem('role');
       const token = localStorage.getItem('token');
-      if (token && role === 'Admin') {
-        this.router.navigate(['/clients']);
+      if (token) {
+        if (role === 'Admin') {
+          this.router.navigate(['/admin/contracts']);
+        } else if (role === 'Advisor') {
+          this.router.navigate(['/contracts']);
+        }
       }
     }
   }
@@ -50,8 +54,8 @@ export class Login implements OnInit {
         this.isLoading = false;
         this.cdr.markForCheck();
         if (isPlatformBrowser(this.platformId)) {
-          if (res.user?.role !== 'Admin') {
-            this.toastService.error('Access denied. Only administrators are allowed to log in.');
+          if (res.user?.role !== 'Admin' && res.user?.role !== 'Advisor') {
+            this.toastService.error('Access denied. Only administrators and advisors are allowed to log in.');
             return;
           }
           if (res.token) {
@@ -59,9 +63,11 @@ export class Login implements OnInit {
           }
           if (res.user) {
             localStorage.setItem('role', res.user.role);
+            localStorage.setItem('userId', res.user.id);
           }
         }
-        this.router.navigate(['/clients']);
+        const targetRoute = res.user?.role === 'Advisor' ? '/contracts' : '/admin/contracts';
+        this.router.navigate([targetRoute]);
       },
       error: (err) => {
         this.isLoading = false;

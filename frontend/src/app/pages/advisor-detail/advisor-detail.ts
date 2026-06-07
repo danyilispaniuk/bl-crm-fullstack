@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { Component, inject, OnInit, PLATFORM_ID, signal, computed } from '@angular/core';
 import { isPlatformBrowser, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -28,6 +28,18 @@ export class AdvisorDetail implements OnInit {
   isSaving = signal(false);
   showValidationErrors = signal(false);
   currentUserRole = signal<string | null>(null);
+  currentUserId = signal<string | null>(null);
+
+  canEditProfile = computed(() => {
+    const role = this.currentUserRole();
+    if (role === 'Admin') return true;
+    if (role === 'Advisor') {
+      const adv = this.advisor();
+      const currentId = this.currentUserId();
+      return !!adv && !!currentId && adv.id === currentId;
+    }
+    return false;
+  });
 
   editForm = {
     firstName: '',
@@ -127,7 +139,8 @@ export class AdvisorDetail implements OnInit {
   goBack(): void {
     this.location.back();
   }
-  contracts = signal<Contract[]>([]);
+  managedContracts = signal<Contract[]>([]);
+  participatingContracts = signal<Contract[]>([]);
   isLoadingAdvisor = signal(true);
   isLoadingContracts = signal(true);
 
@@ -146,6 +159,7 @@ export class AdvisorDetail implements OnInit {
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.currentUserRole.set(localStorage.getItem('role'));
+      this.currentUserId.set(localStorage.getItem('userId'));
       const id = this.route.snapshot.paramMap.get('id');
       if (id) {
         this.fetchAdvisor(id);
@@ -174,10 +188,10 @@ export class AdvisorDetail implements OnInit {
   }
 
   fetchContracts(advisorId: string): void {
-    this.contractsService.getContracts().subscribe({
+    this.contractsService.getAdvisorContracts(advisorId).subscribe({
       next: (data) => {
-        const advisorContracts = data.filter(c => c.contractManagerId === advisorId);
-        this.contracts.set(advisorContracts);
+        this.managedContracts.set(data.managedContracts || []);
+        this.participatingContracts.set(data.participatingContracts || []);
         this.isLoadingContracts.set(false);
       },
       error: (err) => {
@@ -193,7 +207,8 @@ export class AdvisorDetail implements OnInit {
       this.contractsService.deleteContract(id).subscribe({
         next: () => {
           this.toastService.success('Contract deleted successfully.');
-          this.contracts.update(list => list.filter(c => c.id !== id));
+          this.managedContracts.update(list => list.filter(c => c.id !== id));
+          this.participatingContracts.update(list => list.filter(c => c.id !== id));
         },
         error: (err) => {
           console.error('[AdvisorDetail] Error deleting contract:', err);

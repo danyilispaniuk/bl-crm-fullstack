@@ -10,6 +10,7 @@ export const routes: Routes = [
   { path: 'advisors', loadComponent: () => import('./pages/advisors/advisors').then(m => m.Advisors), canActivate: [authGuard] },
   { path: 'advisor/:id', loadComponent: () => import('./pages/advisor-detail/advisor-detail').then(m => m.AdvisorDetail), canActivate: [authGuard] },
   { path: 'contracts', loadComponent: () => import('./pages/contracts/contracts').then(m => m.Contracts), canActivate: [authGuard] },
+  { path: 'admin/contracts', loadComponent: () => import('./pages/admin-contracts/admin-contracts').then(m => m.AdminContracts), canActivate: [authGuard] },
   { path: 'contracts/new', loadComponent: () => import('./pages/contracts-new/contracts-new').then(m => m.ContractsNew), canActivate: [authGuard] },
   { path: 'contract/:id', loadComponent: () => import('./pages/contract-detail/contract-detail').then(m => m.ContractDetail), canActivate: [authGuard] }
 ];

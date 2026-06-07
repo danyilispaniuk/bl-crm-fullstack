@@ -135,4 +135,63 @@ public class ContractService(IApplicationDbContext dbContext) : IContractService
         await dbContext.SaveChangesAsync();
         return true;
     }
+
+    public async Task<AdvisorContractsDto> GetContractsByAdvisorIdAsync(Guid advisorId)
+    {
+        var allContracts = await dbContext.Contracts
+            .Include(c => c.Client)
+            .Include(c => c.ContractManager)
+            .Include(c => c.Participants)
+            .Where(c => c.ContractManagerId == advisorId || c.Participants.Any(p => p.Id == advisorId))
+            .Select(c => new ContractsDto
+            {
+                Id = c.Id,
+                RegistrationNumber = c.RegistrationNumber,
+                Institution = c.Institution,
+                StartDate = c.StartDate,
+                ValidityDate = c.ValidityDate,
+                EndDate = c.EndDate,
+                ClientId = c.ClientId,
+                ClientName = $"{c.Client.FirstName} {c.Client.LastName}",
+                ContractManagerId = c.ContractManagerId,
+                ContractManagerName = $"{c.ContractManager.FirstName} {c.ContractManager.LastName}"
+            }).ToListAsync();
+
+        return new AdvisorContractsDto
+        {
+            ManagedContracts = allContracts.Where(c => c.ContractManagerId == advisorId).ToList(),
+            ParticipatingContracts = allContracts.Where(c => c.ContractManagerId != advisorId).ToList()
+        };
+    }
+
+    public async Task<IEnumerable<ContractsDto>> GetContractsByClientIdAsync(Guid clientId, Guid? advisorId = null)
+    {
+        var query = dbContext.Contracts.AsQueryable();
+
+        if (advisorId.HasValue)
+        {
+            query = query.Where(c => c.ClientId == clientId && (c.ContractManagerId == advisorId.Value || c.Participants.Any(p => p.Id == advisorId.Value)));
+        }
+        else
+        {
+            query = query.Where(c => c.ClientId == clientId);
+        }
+
+        return await query
+            .Include(c => c.Client)
+            .Include(c => c.ContractManager)
+            .Select(c => new ContractsDto
+            {
+                Id = c.Id,
+                RegistrationNumber = c.RegistrationNumber,
+                Institution = c.Institution,
+                StartDate = c.StartDate,
+                ValidityDate = c.ValidityDate,
+                EndDate = c.EndDate,
+                ClientId = c.ClientId,
+                ClientName = $"{c.Client.FirstName} {c.Client.LastName}",
+                ContractManagerId = c.ContractManagerId,
+                ContractManagerName = $"{c.ContractManager.FirstName} {c.ContractManager.LastName}"
+            }).ToListAsync();
+    }
 }
