@@ -37,7 +37,17 @@ public class ClientsController(
     [Authorize(Roles = "Admin,Advisor,Client")]
     public async Task<ActionResult<IEnumerable<ContractsDto>>> GetClientContracts(Guid id)
     {
-        var contracts = await contractService.GetContractsByClientIdAsync(id);
+        Guid? advisorId = null;
+        if (User.IsInRole("Advisor"))
+        {
+            var advisorIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (Guid.TryParse(advisorIdClaim, out var parsedId))
+            {
+                advisorId = parsedId;
+            }
+        }
+
+        var contracts = await contractService.GetContractsByClientIdAsync(id, advisorId);
         return Ok(contracts);
     }
 

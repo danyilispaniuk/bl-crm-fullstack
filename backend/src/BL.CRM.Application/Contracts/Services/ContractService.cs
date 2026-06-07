@@ -164,12 +164,22 @@ public class ContractService(IApplicationDbContext dbContext) : IContractService
         };
     }
 
-    public async Task<IEnumerable<ContractsDto>> GetContractsByClientIdAsync(Guid clientId)
+    public async Task<IEnumerable<ContractsDto>> GetContractsByClientIdAsync(Guid clientId, Guid? advisorId = null)
     {
-        return await dbContext.Contracts
+        var query = dbContext.Contracts.AsQueryable();
+
+        if (advisorId.HasValue)
+        {
+            query = query.Where(c => c.ClientId == clientId && (c.ContractManagerId == advisorId.Value || c.Participants.Any(p => p.Id == advisorId.Value)));
+        }
+        else
+        {
+            query = query.Where(c => c.ClientId == clientId);
+        }
+
+        return await query
             .Include(c => c.Client)
             .Include(c => c.ContractManager)
-            .Where(c => c.ClientId == clientId)
             .Select(c => new ContractsDto
             {
                 Id = c.Id,

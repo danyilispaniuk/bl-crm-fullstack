@@ -23,6 +23,24 @@ public class ContractsController(IContractService contractService) : ControllerB
     {
         var contract = await contractService.GetContractByIdAsync(id);
         if (contract == null) return NotFound();
+
+        if (User.IsInRole("Advisor"))
+        {
+            var advisorIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(advisorIdClaim, out var advisorId))
+            {
+                return Forbid();
+            }
+
+            var isManager = contract.ContractManagerId == advisorId;
+            var isParticipant = contract.Participants.Any(p => p.Id == advisorId);
+
+            if (!isManager && !isParticipant)
+            {
+                return StatusCode(403, new { Message = "You are not authorized to view this contract." });
+            }
+        }
+
         return Ok(contract);
     }
 
