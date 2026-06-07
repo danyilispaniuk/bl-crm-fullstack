@@ -13,7 +13,7 @@ namespace BL.CRM.API.Controllers;
 [Route("api/client")]
 public class ClientsController(
     IUserService userService,
-    IExportService exportService,
+    IUserExportService exportService,
     UserManager<Person> userManager,
     IContractService contractService) : ControllerBase
 {

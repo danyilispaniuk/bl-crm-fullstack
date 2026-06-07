@@ -13,7 +13,7 @@ namespace BL.CRM.API.Controllers;
 [Route("api/advisor")]
 public class AdvisorsController(
     IUserService userService,
-    IExportService exportService,
+    IUserExportService exportService,
     UserManager<Person> userManager,
     IContractService contractService) : ControllerBase
 {

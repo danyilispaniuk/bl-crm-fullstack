@@ -71,7 +71,7 @@ internal sealed class AdvisorCsvRowMap : ClassMap<AdvisorCsvRow>
 // Service
 // ──────────────────────────────────────────────
 
-public class ExportService(IApplicationDbContext dbContext) : IExportService
+public class UserExportService(IApplicationDbContext dbContext) : IUserExportService
 {
     private static CsvConfiguration BuildConfig() => new(CultureInfo.InvariantCulture)
     {
@@ -136,4 +136,3 @@ public class ExportService(IApplicationDbContext dbContext) : IExportService
         return memoryStream.ToArray();
     }
 }
-

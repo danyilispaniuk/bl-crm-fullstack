@@ -1,6 +1,6 @@
 namespace BL.CRM.Application.Users.Interfaces;
 
-public interface IExportService
+public interface IUserExportService
 {
     /// <summary>
     /// Generates a UTF-8 CSV byte array for all clients.
