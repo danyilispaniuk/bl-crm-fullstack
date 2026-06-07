@@ -11,8 +11,8 @@ namespace BL.CRM.API.Controllers;
 [Route("api/client")]
 public class ClientsController(IUserService userService, UserManager<Person> userManager) : ControllerBase
 {
-    [HttpGet("~/api/admin/client")]
-    [Authorize(Roles = "Admin")]
+    [HttpGet]
+    [Authorize(Roles = "Admin,Advisor")]
     public async Task<ActionResult<IEnumerable<UserDto>>> GetClients()
     {
         var clients = await userService.GetAllClientsAsync();

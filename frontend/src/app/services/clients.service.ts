@@ -44,7 +44,7 @@ export class ClientsService {
     }
 
     if (role === 'Admin' || role === 'Advisor') {
-      return this.http.get<Client[]>(`${this.apiUrl}/admin/client`);
+      return this.http.get<Client[]>(`${this.apiUrl}/client`);
     } else {
       return this.http.get<Client[]>(`${this.apiUrl}/client/lookup`);
     }
