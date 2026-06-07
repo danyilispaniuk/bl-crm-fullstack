@@ -163,4 +163,25 @@ public class ContractService(IApplicationDbContext dbContext) : IContractService
             ParticipatingContracts = allContracts.Where(c => c.ContractManagerId != advisorId).ToList()
         };
     }
+
+    public async Task<IEnumerable<ContractsDto>> GetContractsByClientIdAsync(Guid clientId)
+    {
+        return await dbContext.Contracts
+            .Include(c => c.Client)
+            .Include(c => c.ContractManager)
+            .Where(c => c.ClientId == clientId)
+            .Select(c => new ContractsDto
+            {
+                Id = c.Id,
+                RegistrationNumber = c.RegistrationNumber,
+                Institution = c.Institution,
+                StartDate = c.StartDate,
+                ValidityDate = c.ValidityDate,
+                EndDate = c.EndDate,
+                ClientId = c.ClientId,
+                ClientName = $"{c.Client.FirstName} {c.Client.LastName}",
+                ContractManagerId = c.ContractManagerId,
+                ContractManagerName = $"{c.ContractManager.FirstName} {c.ContractManager.LastName}"
+            }).ToListAsync();
+    }
 }

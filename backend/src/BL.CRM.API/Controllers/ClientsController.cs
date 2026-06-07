@@ -1,5 +1,7 @@
 using BL.CRM.Application.Users.DTOs;
 using BL.CRM.Application.Users.Interfaces;
+using BL.CRM.Application.Contracts.Interfaces;
+using BL.CRM.Application.Contracts.DTOs;
 using BL.CRM.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -9,7 +11,10 @@ namespace BL.CRM.API.Controllers;
 
 [ApiController]
 [Route("api/client")]
-public class ClientsController(IUserService userService, UserManager<Person> userManager) : ControllerBase
+public class ClientsController(
+    IUserService userService, 
+    UserManager<Person> userManager,
+    IContractService contractService) : ControllerBase
 {
     [HttpGet]
     [Authorize(Roles = "Admin,Advisor")]
@@ -26,6 +31,14 @@ public class ClientsController(IUserService userService, UserManager<Person> use
         var client = await userService.GetClientByIdAsync(id);
         if (client == null) return NotFound();
         return Ok(client);
+    }
+
+    [HttpGet("{id}/contracts")]
+    [Authorize(Roles = "Admin,Advisor,Client")]
+    public async Task<ActionResult<IEnumerable<ContractsDto>>> GetClientContracts(Guid id)
+    {
+        var contracts = await contractService.GetContractsByClientIdAsync(id);
+        return Ok(contracts);
     }
 
     [HttpPost]
