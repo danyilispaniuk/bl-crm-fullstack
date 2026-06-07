@@ -22,7 +22,9 @@
         } @else if (person.role === 'Advisor') {
         <a class="dropdown-item" [routerLink]="['/advisor', person.id]">Open Details</a>
         }
+        @if (isAdmin) {
         <button class="dropdown-item delete-option" type="button" (click)="onDeleteClick($event)">Delete</button>
+        }
       </div>
       }
     </div>

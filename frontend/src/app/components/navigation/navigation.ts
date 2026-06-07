@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, inject, PLATFORM_ID } from '@angular/core';
+import { Component, inject, PLATFORM_ID, OnInit, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
@@ -8,9 +8,17 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './navigation.html',
   styleUrl: './navigation.scss'
 })
-export class NavigationComponent {
+export class NavigationComponent implements OnInit {
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
+
+  isAdmin = signal(false);
+
+  ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.isAdmin.set(localStorage.getItem('role') === 'Admin');
+    }
+  }
 
   onLogout(): void {
     if (isPlatformBrowser(this.platformId)) {

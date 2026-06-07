@@ -1,4 +1,5 @@
-import { Component, Input, Output, EventEmitter, HostListener, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener, inject, PLATFORM_ID, OnInit } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { Client } from '../../services/clients.service';
 
@@ -8,12 +9,20 @@ import { Client } from '../../services/clients.service';
   templateUrl: './persona-card.html',
   styleUrl: './persona-card.scss'
 })
-export class PersonaCardComponent {
+export class PersonaCardComponent implements OnInit {
   private router = inject(Router);
+  private platformId = inject(PLATFORM_ID);
 
   @Input({ required: true }) person!: Client;
   @Output() delete = new EventEmitter<void>();
   isMenuOpen = false;
+  isAdmin = false;
+
+  ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.isAdmin = localStorage.getItem('role') === 'Admin';
+    }
+  }
 
   @HostListener('document:click')
   onDocumentClick(): void {

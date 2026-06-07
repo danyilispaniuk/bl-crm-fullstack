@@ -43,11 +43,9 @@ export class ClientsService {
       role = localStorage.getItem('role');
     }
 
-    if (role === 'Admin') {
+    if (role === 'Admin' || role === 'Advisor') {
       return this.http.get<Client[]>(`${this.apiUrl}/admin/client`);
     } else {
-      // Cast the lookup elements as Client since they are not used elsewhere in this version,
-      // or define a separate endpoint when advisor client list is implemented.
       return this.http.get<Client[]>(`${this.apiUrl}/client/lookup`);
     }
   }

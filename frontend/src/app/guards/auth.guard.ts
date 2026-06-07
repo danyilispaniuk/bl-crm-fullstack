@@ -9,7 +9,7 @@ export const authGuard: CanActivateFn = () => {
   if (isPlatformBrowser(platformId)) {
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
-    if (token && role === 'Admin') {
+    if (token && (role === 'Admin' || role === 'Advisor')) {
       return true;
     }
     return router.parseUrl('/login');
