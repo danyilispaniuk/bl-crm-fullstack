@@ -42,7 +42,7 @@ export class ClientsService {
     if (isPlatformBrowser(this.platformId)) {
       role = localStorage.getItem('role');
     }
-    
+
     if (role === 'Admin') {
       return this.http.get<Client[]>(`${this.apiUrl}/admin/client`);
     } else {
@@ -66,5 +66,9 @@ export class ClientsService {
 
   createClient(clientData: CreateClientRequest): Observable<Client> {
     return this.http.post<Client>(`${this.apiUrl}/client`, clientData);
+  }
+
+  updateClient(id: string, clientData: any): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/client/${id}`, clientData);
   }
 }

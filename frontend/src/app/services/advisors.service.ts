@@ -47,4 +47,8 @@ export class AdvisorsService {
   getAdvisorsLookup(): Observable<{ id: string; fullName: string }[]> {
     return this.http.get<{ id: string; fullName: string }[]>(`${this.apiUrl}/advisor/lookup`);
   }
+
+  updateAdvisor(id: string, advisorData: any): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/admin/advisor/${id}`, advisorData);
+  }
 }

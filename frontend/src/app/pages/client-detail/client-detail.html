@@ -22,28 +22,86 @@
           <h1>{{ c.firstName }} {{ c.lastName }}</h1>
           <span class="role-badge">{{ c.role }}</span>
         </div>
-      </div>
-
-      <div class="profile-details-grid">
-        <div class="profile-detail-item">
-          <span class="detail-label">Email Address</span>
-          <span class="detail-value">{{ c.email }}</span>
-        </div>
-        <div class="profile-detail-item">
-          <span class="detail-label">Phone Number</span>
-          <span class="detail-value">{{ c.phoneNumber || '—' }}</span>
-        </div>
-        <div class="profile-detail-item">
-          <span class="detail-label">Rodné číslo</span>
-          <span class="detail-value">{{ c.personalId || '—' }}</span>
-        </div>
-        @if (c.birthDate) {
-        <div class="profile-detail-item">
-          <span class="detail-label">Age</span>
-          <span class="detail-value">{{ calculateAge(c.birthDate) }} years</span>
-        </div>
+        @if (!isEditing()) {
+          <button class="btn-primary" (click)="startEdit(c)">
+            Edit Profile
+          </button>
         }
       </div>
+
+      @if (isEditing()) {
+        <form (submit)="saveClient(); $event.preventDefault()" class="edit-profile-form">
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="editFirstName">First Name</label>
+              <input type="text" id="editFirstName" name="firstName" [(ngModel)]="editForm.firstName" required class="input-field">
+              @if (showValidationErrors() && editForm.firstName.trim().length < 2) {
+                <span class="field-error">First name must be at least 2 characters.</span>
+              }
+            </div>
+            <div class="form-group">
+              <label for="editLastName">Last Name</label>
+              <input type="text" id="editLastName" name="lastName" [(ngModel)]="editForm.lastName" required class="input-field">
+              @if (showValidationErrors() && editForm.lastName.trim().length < 2) {
+                <span class="field-error">Last name must be at least 2 characters.</span>
+              }
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="editEmail">Email Address</label>
+            <input type="email" id="editEmail" name="email" [(ngModel)]="editForm.email" required class="input-field">
+            @if (showValidationErrors() && !isEmailValid(editForm.email)) {
+              <span class="field-error">Please enter a valid email address.</span>
+            }
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="editPersonalId">Rodné číslo</label>
+              <input type="text" id="editPersonalId" name="personalId" [(ngModel)]="editForm.personalId" placeholder="YYMMDD/XXXX" class="input-field">
+              @if (showValidationErrors() && !isPersonalIdValid(editForm.personalId)) {
+                <span class="field-error">Must be 9-10 digits or in format XXXXXX/XXXX.</span>
+              }
+            </div>
+            <div class="form-group">
+              <label for="editBirthDate">Birth Date</label>
+              <input type="date" id="editBirthDate" name="birthDate" [(ngModel)]="editForm.birthDate" required class="input-field">
+              @if (showValidationErrors() && !editForm.birthDate) {
+                <span class="field-error">Birth date is required.</span>
+              }
+            </div>
+          </div>
+
+          <div class="edit-profile-actions">
+            <button type="button" class="btn-secondary" (click)="cancelEdit()">Cancel</button>
+            <button type="submit" class="btn-primary" [disabled]="isSaving()">
+              {{ isSaving() ? 'Saving...' : 'Save Changes' }}
+            </button>
+          </div>
+        </form>
+      } @else {
+        <div class="profile-details-grid">
+          <div class="profile-detail-item">
+            <span class="detail-label">Email Address</span>
+            <span class="detail-value">{{ c.email }}</span>
+          </div>
+          <div class="profile-detail-item">
+            <span class="detail-label">Phone Number</span>
+            <span class="detail-value">{{ c.phoneNumber || '—' }}</span>
+          </div>
+          <div class="profile-detail-item">
+            <span class="detail-label">Rodné číslo</span>
+            <span class="detail-value">{{ c.personalId || '—' }}</span>
+          </div>
+          @if (c.birthDate) {
+          <div class="profile-detail-item">
+            <span class="detail-label">Age</span>
+            <span class="detail-value">{{ calculateAge(c.birthDate) }} years</span>
+          </div>
+          }
+        </div>
+      }
     </div>
 
     <section class="contracts-section">
