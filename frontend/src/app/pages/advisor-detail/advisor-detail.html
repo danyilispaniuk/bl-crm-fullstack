@@ -1,0 +1,135 @@
+<div class="dashboard-layout">
+  <app-navigation></app-navigation>
+
+  <main class="main-content">
+    <div class="detail-header">
+      <button (click)="goBack()" class="back-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Go Back
+      </button>
+    </div>
+
+    @if (isLoadingAdvisor()) {
+    <div class="state-message">Loading advisor details…</div>
+    } @else if (advisor(); as a) {
+    <div class="profile-section glass-panel">
+      <div class="profile-header">
+        <div class="profile-title">
+          <h1>{{ a.firstName }} {{ a.lastName }}</h1>
+          <span class="role-badge">{{ a.role }}</span>
+        </div>
+        @if (currentUserRole() === 'Admin' && !isEditing()) {
+          <button class="btn-primary" (click)="startEdit(a)">
+            Edit Profile
+          </button>
+        }
+      </div>
+
+      @if (isEditing()) {
+        <form (submit)="saveAdvisor(); $event.preventDefault()" class="edit-profile-form">
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="editFirstName">First Name</label>
+              <input type="text" id="editFirstName" name="firstName" [(ngModel)]="editForm.firstName" required class="input-field">
+              @if (showValidationErrors() && editForm.firstName.trim().length < 2) {
+                <span class="field-error">First name must be at least 2 characters.</span>
+              }
+            </div>
+            <div class="form-group">
+              <label for="editLastName">Last Name</label>
+              <input type="text" id="editLastName" name="lastName" [(ngModel)]="editForm.lastName" required class="input-field">
+              @if (showValidationErrors() && editForm.lastName.trim().length < 2) {
+                <span class="field-error">Last name must be at least 2 characters.</span>
+              }
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="editEmail">Email Address</label>
+            <input type="email" id="editEmail" name="email" [(ngModel)]="editForm.email" required class="input-field">
+            @if (showValidationErrors() && !isEmailValid(editForm.email)) {
+              <span class="field-error">Please enter a valid email address.</span>
+            }
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="editPersonalId">Rodné číslo</label>
+              <input type="text" id="editPersonalId" name="personalId" [(ngModel)]="editForm.personalId" placeholder="YYMMDD/XXXX" class="input-field">
+              @if (showValidationErrors() && !isPersonalIdValid(editForm.personalId)) {
+                <span class="field-error">Must be 9-10 digits or in format XXXXXX/XXXX.</span>
+              }
+            </div>
+            <div class="form-group">
+              <label for="editBirthDate">Birth Date</label>
+              <input type="date" id="editBirthDate" name="birthDate" [(ngModel)]="editForm.birthDate" required class="input-field">
+              @if (showValidationErrors() && !editForm.birthDate) {
+                <span class="field-error">Birth date is required.</span>
+              }
+            </div>
+          </div>
+
+          <div class="edit-profile-actions">
+            <button type="button" class="btn-secondary" (click)="cancelEdit()">Cancel</button>
+            <button type="submit" class="btn-primary" [disabled]="isSaving()">
+              {{ isSaving() ? 'Saving...' : 'Save Changes' }}
+            </button>
+          </div>
+        </form>
+      } @else {
+        <div class="profile-details-grid">
+          <div class="profile-detail-item">
+            <span class="detail-label">Email Address</span>
+            <span class="detail-value">{{ a.email }}</span>
+          </div>
+          <div class="profile-detail-item">
+            <span class="detail-label">Phone Number</span>
+            <span class="detail-value">{{ a.phoneNumber || '—' }}</span>
+          </div>
+          <div class="profile-detail-item">
+            <span class="detail-label">Rodné číslo</span>
+            <span class="detail-value">{{ a.personalId || '—' }}</span>
+          </div>
+          @if (a.birthDate) {
+          <div class="profile-detail-item">
+            <span class="detail-label">Age</span>
+            <span class="detail-value">{{ calculateAge(a.birthDate) }} years</span>
+          </div>
+          }
+        </div>
+      }
+    </div>
+
+    <section class="contracts-section">
+      <div class="section-header">
+        <h2>Managed Contracts ({{ contracts().length }})</h2>
+      </div>
+
+      @if (isLoadingContracts()) {
+      <div class="state-message">Loading contracts…</div>
+      } @else if (contracts().length === 0) {
+      <div class="no-contracts-box glass-panel">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none"
+          stroke="var(--text-secondary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        <p>No contracts managed by this advisor.</p>
+      </div>
+      } @else {
+      <div class="contracts-grid">
+        @for (contract of contracts(); track contract.id) {
+        <app-contract-card [contract]="contract" (delete)="deleteContract(contract.id)" />
+        }
+      </div>
+      }
+    </section>
+    }
+  </main>
+</div>

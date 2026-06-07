@@ -7,12 +7,11 @@ namespace BL.CRM.Domain.Entities;
 /// </summary>
 public class Contract : Entity
 {
-    public string RegistrationNumber { get; set; } = string.Empty; // Registration number
-    public string Institution { get; set; } = string.Empty; // Institution (ČSOB, AEGON, etc.)
-    
-    public DateTime StartDate { get; set; } // Start date
-    public DateTime ValidityDate { get; set; } // Validity date
-    public DateTime? EndDate { get; set; } // End date
+    public string RegistrationNumber { get; set; } = string.Empty;
+    public string Institution { get; set; } = string.Empty;
+    public DateOnly StartDate { get; set; }
+    public DateOnly ValidityDate { get; set; }
+    public DateOnly? EndDate { get; set; }
 
     // Relationships
 

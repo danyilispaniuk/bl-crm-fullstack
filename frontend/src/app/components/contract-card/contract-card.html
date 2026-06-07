@@ -1,0 +1,53 @@
+<div class="contract-card">
+  <a [routerLink]="['/contract', contract.id]" class="contract-card-overlay-link" aria-label="Open Details"></a>
+  <div class="contract-card-header">
+    <div class="contract-title-area">
+      <h3>{{ contract.registrationNumber }}</h3>
+      <p class="institution-name">{{ contract.institution }}</p>
+    </div>
+
+    <div class="header-right">
+      <div class="action-menu-container">
+        <button class="action-btn" aria-label="More options" (click)="toggleMenu($event)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="1"></circle>
+            <circle cx="19" cy="12" r="1"></circle>
+            <circle cx="5" cy="12" r="1"></circle>
+          </svg>
+        </button>
+        @if (isMenuOpen) {
+        <div class="dropdown-menu">
+          <a class="dropdown-item" [routerLink]="['/contract', contract.id]">Open Details</a>
+          <button class="dropdown-item delete-option" type="button" (click)="onDeleteClick($event)">Delete</button>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="contract-details">
+    <div class="detail-row">
+      <span class="detail-label">Client</span>
+      <span class="detail-value">{{ contract.clientName }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">Manager</span>
+      <span class="detail-value">{{ contract.contractManagerName }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">Start Date</span>
+      <span class="detail-value">{{ contract.startDate | date: 'dd/MM/yyyy' }}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">Validity Date</span>
+      <span class="detail-value">{{ contract.validityDate | date: 'dd/MM/yyyy' }}</span>
+    </div>
+    @if (contract.endDate) {
+    <div class="detail-row">
+      <span class="detail-label">End Date</span>
+      <span class="detail-value">{{ contract.endDate | date: 'dd/MM/yyyy' }}</span>
+    </div>
+    }
+  </div>
+</div>

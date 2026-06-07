@@ -1,0 +1,41 @@
+<div class="persona-card">
+  <a [routerLink]="person.role === 'Advisor' ? ['/advisor', person.id] : ['/client', person.id]"
+    class="persona-card-overlay-link" aria-label="Open Details"></a>
+  <div class="persona-header">
+    <div class="persona-info">
+      <h3>{{ person.firstName }} {{ person.lastName }}</h3>
+      <p class="persona-email">{{ person.email }}</p>
+    </div>
+    <div class="action-menu-container">
+      <button class="action-btn" aria-label="More options" (click)="toggleMenu($event)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="1"></circle>
+          <circle cx="19" cy="12" r="1"></circle>
+          <circle cx="5" cy="12" r="1"></circle>
+        </svg>
+      </button>
+      @if (isMenuOpen) {
+      <div class="dropdown-menu">
+        @if (person.role === 'Client') {
+        <a class="dropdown-item" [routerLink]="['/client', person.id]">Open Details</a>
+        } @else if (person.role === 'Advisor') {
+        <a class="dropdown-item" [routerLink]="['/advisor', person.id]">Open Details</a>
+        }
+        <button class="dropdown-item delete-option" type="button" (click)="onDeleteClick($event)">Delete</button>
+      </div>
+      }
+    </div>
+  </div>
+
+  <div class="persona-details">
+    <div class="detail-item">
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+      <span>{{ person.personalId || '—' }}</span>
+    </div>
+  </div>
+</div>
