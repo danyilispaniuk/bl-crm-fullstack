@@ -14,9 +14,12 @@
 
       @if (contract() && !isEditing()) {
       <div style="display: flex; gap: 0.75rem;">
+        @if (canEditContract()) {
         <button class="btn-primary" (click)="startEdit(contract()!)">
           Edit Contract
         </button>
+        }
+        @if (currentUserRole() === 'Admin') {
         <button class="delete-btn" (click)="deleteContract()">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -25,6 +28,7 @@
           </svg>
           Delete Contract
         </button>
+        }
       </div>
       }
     </div>

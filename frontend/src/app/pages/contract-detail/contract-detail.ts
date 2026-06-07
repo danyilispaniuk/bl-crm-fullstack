@@ -30,6 +30,21 @@ export class ContractDetail implements OnInit {
   isSaving = signal(false);
   showValidationErrors = signal(false);
 
+  currentUserRole = signal<string | null>(null);
+  currentUserId = signal<string | null>(null);
+
+  canEditContract = computed(() => {
+    const role = this.currentUserRole();
+    if (role === 'Admin') return true;
+    if (role === 'Advisor') {
+      const userId = this.currentUserId();
+      const c = this.contract();
+      if (!c || !userId) return false;
+      return c.contractManagerId === userId;
+    }
+    return false;
+  });
+
   // Form signals
   registrationNumber = signal('');
   institution = signal('');
@@ -274,6 +289,8 @@ export class ContractDetail implements OnInit {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
+      this.currentUserRole.set(localStorage.getItem('role'));
+      this.currentUserId.set(localStorage.getItem('userId'));
       const id = this.route.snapshot.paramMap.get('id');
       if (id) {
         this.fetchContract(id);
