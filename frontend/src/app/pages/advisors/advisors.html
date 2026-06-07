@@ -6,6 +6,11 @@
       <div>
         <h1>Advisors</h1>
       </div>
+      @if (isAdmin()) {
+        <button class="btn-dark-blue" (click)="exportCsv()">
+          Create .csv file
+        </button>
+      }
     </header>
 
     <div class="search-bar glass-panel">

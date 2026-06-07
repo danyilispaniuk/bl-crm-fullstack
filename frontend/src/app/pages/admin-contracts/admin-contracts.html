@@ -6,9 +6,14 @@
       <div>
         <h1>Contracts (Admin)</h1>
       </div>
-      <a class="btn-primary" routerLink="/contracts/new">
-        + New Contract
-      </a>
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <a class="btn-primary" routerLink="/contracts/new">
+          + New Contract
+        </a>
+        <button class="btn-dark-blue" (click)="exportCsv()">
+          Create .csv file
+        </button>
+      </div>
     </header>
 
     <div class="search-bar glass-panel">

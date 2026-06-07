@@ -71,4 +71,8 @@ export class ContractsService {
   getClientContracts(clientId: string): Observable<Contract[]> {
     return this.http.get<Contract[]>(`${this.apiUrl}/client/${clientId}/contracts`);
   }
+
+  exportContractsCsv(): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/admin/contract/export/csv`, { responseType: 'blob' });
+  }
 }

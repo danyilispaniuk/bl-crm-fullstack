@@ -51,4 +51,8 @@ export class AdvisorsService {
   updateAdvisor(id: string, advisorData: any): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/advisor/${id}`, advisorData);
   }
+
+  exportAdvisorsCsv(): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/admin/advisor/export/csv`, { responseType: 'blob' });
+  }
 }

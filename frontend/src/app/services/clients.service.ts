@@ -69,4 +69,8 @@ export class ClientsService {
   updateClient(id: string, clientData: any): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/client/${id}`, clientData);
   }
+
+  exportClientsCsv(): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/client/export/csv`, { responseType: 'blob' });
+  }
 }

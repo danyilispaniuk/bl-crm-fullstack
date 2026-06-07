@@ -20,6 +20,28 @@ export class Clients implements OnInit {
   clients = signal<Client[]>([]);
   searchQuery = signal('');
   isLoading = signal(true);
+  isAdmin = signal(false);
+
+  exportCsv(): void {
+    this.clientsService.exportClientsCsv().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `clients_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        this.toastService.success('CSV file exported successfully.');
+      },
+      error: (err) => {
+        console.error('[Clients] Export error:', err);
+        const message = err?.error?.message || err?.error?.Message || 'Failed to export CSV.';
+        this.toastService.error(message);
+      }
+    });
+  }
 
   // Modal signals
   isModalOpen = signal(false);
@@ -145,6 +167,9 @@ export class Clients implements OnInit {
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
+      const role = localStorage.getItem('role');
+      this.isAdmin.set(role === 'Admin');
+
       this.clientsService.getClients().subscribe({
         next: (data) => {
           console.log('[Clients] API response count:', data.length, data);
