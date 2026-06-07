@@ -54,4 +54,8 @@ export class ContractsService {
   createContract(contractData: CreateContractRequest): Observable<Contract> {
     return this.http.post<Contract>(`${this.apiUrl}/contract`, contractData);
   }
+
+  updateContract(id: string, contractData: any): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/contract/${id}`, contractData);
+  }
 }

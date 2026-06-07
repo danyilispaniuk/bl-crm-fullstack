@@ -12,15 +12,20 @@
         Go Back
       </button>
 
-      @if (contract()) {
-      <button class="delete-btn" (click)="deleteContract()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="3 6 5 6 21 6"></polyline>
-          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-        </svg>
-        Delete Contract
-      </button>
+      @if (contract() && !isEditing()) {
+      <div style="display: flex; gap: 0.75rem;">
+        <button class="btn-primary" (click)="startEdit(contract()!)">
+          Edit Contract
+        </button>
+        <button class="delete-btn" (click)="deleteContract()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          Delete Contract
+        </button>
+      </div>
       }
     </div>
 
@@ -28,75 +33,247 @@
     <div class="state-message">Loading contract details…</div>
     } @else if (contract(); as c) {
     <div class="contract-card-panel glass-panel">
-      <div class="panel-header">
-        <div class="panel-title-section">
-          <span class="category-tag">Contract</span>
-          <h1>No. {{ c.registrationNumber }}</h1>
-          <p class="institution-name">{{ c.institution }}</p>
-        </div>
-      </div>
-
-      <div class="details-grid">
-        <div class="detail-item">
-          <span class="detail-label">Start Date</span>
-          <span class="detail-value">{{ c.startDate }}</span>
-        </div>
-
-        <div class="detail-item">
-          <span class="detail-label">Validity Date</span>
-          <span class="detail-value">{{ c.validityDate }}</span>
-        </div>
-
-        <div class="detail-item">
-          <span class="detail-label">End Date</span>
-          <span class="detail-value">{{ c.endDate || '—' }}</span>
-        </div>
-      </div>
-
-      <div class="relations-section">
-        <h2>Related parties</h2>
-        <div class="relations-grid">
-          <div class="relation-card">
-            <span class="relation-label">Client</span>
-            <a [routerLink]="['/client', c.clientId]" class="relation-link">
-              <div class="relation-info">
-                <span class="relation-name">{{ c.clientName }}</span>
-                <span class="view-profile-hint">View Profile →</span>
+      @if (isEditing()) {
+        <form (submit)="saveContract(); $event.preventDefault()" (click)="closeDropdownsAndRestore()" class="new-contract-form">
+          <div class="form-section">
+            <h2 class="section-title">Contract Information</h2>
+            
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="registrationNumber">Registration Number</label>
+                <input type="text" id="registrationNumber" name="registrationNumber" [ngModel]="registrationNumber()" (ngModelChange)="registrationNumber.set($event)" required placeholder="e.g. CON-2026-0001">
+                @if (showValidationErrors() && (!registrationNumber() || registrationNumber().length < 5 || registrationNumber().length > 50)) {
+                  <span class="field-error">Registration number must be between 5 and 50 characters.</span>
+                }
               </div>
-            </a>
+              <div class="form-group">
+                <label for="institution">Institution</label>
+                <input type="text" id="institution" name="institution" [ngModel]="institution()" (ngModelChange)="institution.set($event)" required placeholder="e.g. Bank of Europe">
+                @if (showValidationErrors() && !institution()) {
+                  <span class="field-error">Institution is required.</span>
+                }
+              </div>
+            </div>
+
+            <div class="form-row-3">
+              <div class="form-group">
+                <label for="startDate">Start Date</label>
+                <input type="date" id="startDate" name="startDate" [ngModel]="startDate()" (ngModelChange)="startDate.set($event)" required>
+                @if (showValidationErrors() && !startDate()) {
+                  <span class="field-error">Start date is required.</span>
+                }
+              </div>
+              <div class="form-group">
+                <label for="validityDate">Validity Date</label>
+                <input type="date" id="validityDate" name="validityDate" [ngModel]="validityDate()" (ngModelChange)="validityDate.set($event)" required>
+                @if (showValidationErrors() && !validityDate()) {
+                  <span class="field-error">Validity date is required.</span>
+                }
+              </div>
+              <div class="form-group">
+                <label for="endDate">End Date (Optional)</label>
+                <input type="date" id="endDate" name="endDate" [ngModel]="endDate()" (ngModelChange)="endDate.set($event)">
+              </div>
+            </div>
           </div>
 
-          <div class="relation-card">
-            <span class="relation-label">Contract Manager</span>
-            <a [routerLink]="['/advisor', c.contractManagerId]" class="relation-link">
-              <div class="relation-info">
-                <span class="relation-name">{{ c.contractManagerName }}</span>
-                <span class="view-profile-hint">View Profile →</span>
-              </div>
-            </a>
-          </div>
-        </div>
-      </div>
+          <div class="form-section divider-top">
+            <h2 class="section-title">Involved Parties</h2>
 
-      @if (getOtherParticipants(c).length > 0) {
-      <div class="relations-section" style="margin-top: 2rem;">
-        <h2>Other Participants</h2>
-        <div class="relations-grid">
-          @for (p of getOtherParticipants(c); track p.id) {
-          <div class="relation-card">
-            <span class="relation-label">{{ p.role }}</span>
-            <a [routerLink]="[p.role === 'Advisor' ? '/advisor' : '/client', p.id]" class="relation-link">
-              <div class="relation-info">
-                <span class="relation-name">{{ p.firstName }} {{ p.lastName }}</span>
-                <span class="view-profile-hint">View Profile →</span>
+            <div class="form-row-2">
+              <div class="form-group custom-select-group">
+                <label>Client</label>
+                <div class="custom-select-container">
+                  <input type="text" class="custom-select-input" placeholder="Search and select client..."
+                         [ngModel]="clientInputText()" [ngModelOptions]="{standalone: true}" (ngModelChange)="onClientInput($event)"
+                         (focus)="openClientDropdown()" (click)="$event.stopPropagation()">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="select-chevron-input">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+
+                  @if (isClientDropdownOpen()) {
+                    <div class="custom-dropdown-panel glass-panel" (click)="$event.stopPropagation()">
+                      <div class="dropdown-options-list">
+                        @if (filteredClientsLookup().length === 0) {
+                          <div class="no-options-message">No clients found</div>
+                        } @else {
+                          @for (c of filteredClientsLookup(); track c.id) {
+                            <div class="dropdown-option-item" [class.selected]="c.id === clientId()" (click)="selectClient(c.id)">
+                              {{ c.fullName }}
+                            </div>
+                          }
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+                @if (showValidationErrors() && !clientId()) {
+                  <span class="field-error">Client is required.</span>
+                }
               </div>
-            </a>
+
+              <div class="form-group custom-select-group">
+                <label>Contract Manager</label>
+                <div class="custom-select-container">
+                  <input type="text" class="custom-select-input" placeholder="Search and select advisor..."
+                         [ngModel]="advisorInputText()" [ngModelOptions]="{standalone: true}" (ngModelChange)="onAdvisorInput($event)"
+                         (focus)="openAdvisorDropdown()" (click)="$event.stopPropagation()">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="select-chevron-input">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+
+                  @if (isAdvisorDropdownOpen()) {
+                    <div class="custom-dropdown-panel glass-panel" (click)="$event.stopPropagation()">
+                      <div class="dropdown-options-list">
+                        @if (filteredAdvisorsLookup().length === 0) {
+                          <div class="no-options-message">No advisors found</div>
+                        } @else {
+                          @for (a of filteredAdvisorsLookup(); track a.id) {
+                            <div class="dropdown-option-item" [class.selected]="a.id === contractManagerId()" (click)="selectManager(a.id)">
+                              {{ a.fullName }}
+                            </div>
+                          }
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+                @if (showValidationErrors() && !contractManagerId()) {
+                  <span class="field-error">Contract Manager is required.</span>
+                }
+              </div>
+            </div>
           </div>
-          }
+
+          <div class="form-section divider-top">
+            <label class="section-label-bold">Other Participants (Optional)</label>
+            <div class="participant-search-container">
+              <div class="custom-select-container">
+                <input type="text" class="custom-select-input" placeholder="Search advisor to add..."
+                       [ngModel]="participantInputText()" [ngModelOptions]="{standalone: true}" (ngModelChange)="onParticipantInput($event)"
+                       (focus)="isParticipantDropdownOpen.set(true)" (click)="$event.stopPropagation()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="select-chevron-input">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+
+                @if (isParticipantDropdownOpen()) {
+                  <div class="custom-dropdown-panel glass-panel" (click)="$event.stopPropagation()">
+                    <div class="dropdown-options-list">
+                      @if (filteredParticipantsLookup().length === 0) {
+                        <div class="no-options-message">No advisors available to add</div>
+                      } @else {
+                        @for (p of filteredParticipantsLookup(); track p.id) {
+                          <div class="dropdown-option-item add-participant-item" (click)="addParticipant(p.id)">
+                            <span>{{ p.fullName }}</span>
+                            <span class="add-badge">+ Add</span>
+                          </div>
+                        }
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- List of selected participants -->
+            <div class="selected-participants-container">
+              @if (selectedParticipantsList().length === 0) {
+                <span class="no-participants-text">No other participants selected.</span>
+              } @else {
+                <div class="selected-participants-list">
+                  @for (p of selectedParticipantsList(); track p.id) {
+                    <div class="selected-participant-chip">
+                      <span class="chip-name">{{ p.fullName }}</span>
+                      <button type="button" class="btn-remove-participant" (click)="removeParticipant(p.id)" title="Remove participant">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                          <line x1="18" y1="6" x2="6" y2="18"></line>
+                          <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="form-actions divider-top">
+            <button type="button" class="btn-secondary" (click)="cancelEdit()">Cancel</button>
+            <button type="submit" class="btn-primary" [disabled]="isSaving()">
+              {{ isSaving() ? 'Saving...' : 'Save Changes' }}
+            </button>
+          </div>
+        </form>
+      } @else {
+        <div class="panel-header">
+          <div class="panel-title-section">
+            <span class="category-tag">Contract</span>
+            <h1>No. {{ c.registrationNumber }}</h1>
+            <p class="institution-name">{{ c.institution }}</p>
+          </div>
         </div>
-      </div>
+
+        <div class="details-grid">
+          <div class="detail-item">
+            <span class="detail-label">Start Date</span>
+            <span class="detail-value">{{ c.startDate }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">Validity Date</span>
+            <span class="detail-value">{{ c.validityDate }}</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="detail-label">End Date</span>
+            <span class="detail-value">{{ c.endDate || '—' }}</span>
+          </div>
+        </div>
+
+        <div class="relations-section">
+          <h2>Related parties</h2>
+          <div class="relations-grid">
+            <div class="relation-card">
+              <span class="relation-label">Client</span>
+              <a [routerLink]="['/client', c.clientId]" class="relation-link">
+                <div class="relation-info">
+                  <span class="relation-name">{{ c.clientName }}</span>
+                  <span class="view-profile-hint">View Profile →</span>
+                </div>
+              </a>
+            </div>
+
+            <div class="relation-card">
+              <span class="relation-label">Contract Manager</span>
+              <a [routerLink]="['/advisor', c.contractManagerId]" class="relation-link">
+                <div class="relation-info">
+                  <span class="relation-name">{{ c.contractManagerName }}</span>
+                  <span class="view-profile-hint">View Profile →</span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        @if (getOtherParticipants(c).length > 0) {
+        <div class="relations-section" style="margin-top: 2rem;">
+          <h2>Other Participants</h2>
+          <div class="relations-grid">
+            @for (p of getOtherParticipants(c); track p.id) {
+            <div class="relation-card">
+              <span class="relation-label">{{ p.role }}</span>
+              <a [routerLink]="[p.role === 'Advisor' ? '/advisor' : '/client', p.id]" class="relation-link">
+                <div class="relation-info">
+                  <span class="relation-name">{{ p.firstName }} {{ p.lastName }}</span>
+                  <span class="view-profile-hint">View Profile →</span>
+                </div>
+              </a>
+            </div>
+            }
+          </div>
+        </div>
+        }
       }
-
     </div>
     }
   </main>
